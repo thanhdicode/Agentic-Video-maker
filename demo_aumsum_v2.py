@@ -1,18 +1,19 @@
 """AumSum-style CPU demo v2 using free AI image generation (Pollinations).
 
-This version generates backgrounds and a character with Pollinations, removes the
-character background with rembg, and composites everything with narration using
-MoviePy.  It is still CPU-driven and does not train models, but the visual quality
-is much closer to a professional 2D cartoon than the vector-only v1.
+This version generates a character and per-scene backgrounds with Pollinations,
+removes the character background with rembg, and composites everything with
+narration using MoviePy.  It is CPU-driven and does not train models, but the
+visual quality is much closer to a professional 2D cartoon than the vector-only
+v1.  The script now supports an arbitrary number of scenes.
 """
 
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import math
-import os
 import re
-import time
+import textwrap
 import urllib.parse
 from io import BytesIO
 from pathlib import Path
@@ -22,7 +23,7 @@ import numpy as np
 import requests
 import yaml
 from moviepy import AudioFileClip, CompositeVideoClip, ImageClip, concatenate_videoclips
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 
 
 RESOLUTION = (1280, 720)
@@ -76,7 +77,6 @@ def fetch_image(prompt: str, out_path: Path, width: int = 1280, height: int = 72
     r = requests.get(url, timeout=180)
     r.raise_for_status()
     img = Image.open(BytesIO(r.content)).convert("RGB")
-    # Pollinations may return a slightly different size; force target aspect and resize
     img = img.resize(RESOLUTION, Image.LANCZOS)
     img.save(out_path, "PNG")
 
@@ -93,8 +93,7 @@ def remove_background(input_path: Path, output_path: Path) -> None:
 
 
 def generate_assets(assets_dir: Path) -> None:
-    print("[Assets] Generating AI images via Pollinations...")
-
+    print("[Assets] Generating mascot character via Pollinations...")
     character_prompt = (
         "AumSum style cute turquoise cartoon mascot character, big friendly eyes, "
         "wide smile, short dark hair, 2D flat vector educational illustration, "
@@ -105,31 +104,56 @@ def generate_assets(assets_dir: Path) -> None:
     fetch_image(character_prompt, character_raw, width=1024, height=1024)
     remove_background(character_raw, character_png)
 
-    background_prompts = {
-        "bg_hook.png": (
-            "AumSum style 2D cartoon educational scene, bright sunny ocean with crystal "
-            "clear transparent water, fish and coral visible underwater, blue sky with clouds, "
-            "no character, no mascot, no text, high quality"
-        ),
-        "bg_submarine.png": (
-            "AumSum style 2D cartoon educational scene, deep blue ocean with a grey submarine, "
-            "light rays, bubbles, coral reef, no character, no mascot, no text, high quality"
-        ),
-        "bg_fish.png": (
-            "AumSum style 2D cartoon educational scene, underwater with colorful tropical fish, "
-            "bubbles, light rays, coral, no character, no mascot, no text, high quality"
-        ),
-        "bg_coral.png": (
-            "AumSum style 2D cartoon educational scene, underwater coral reef with a treasure chest, "
-            "light rays, bubbles, no character, no mascot, no text, high quality"
-        ),
-        "bg_outro.png": (
-            "AumSum style 2D cartoon educational scene, sunny beach with palm trees, "
-            "turquoise ocean, bright sky, no character, no mascot, no text, high quality"
-        ),
+
+def scene_to_background_prompt(scene: dict, theme: str) -> str:
+    """Build a Pollinations prompt from the scene text + a project theme."""
+    title = scene["title"].lower()
+    text = scene["text"].lower()
+    # Pull a few content keywords for the background
+    keywords = []
+    if any(w in title or w in text for w in ("space", "moon", "planet", "sun", "orbit")):
+        keywords.append("outer space with stars and planets")
+    if any(w in title or w in text for w in ("ocean", "water", "sea", "river", "lake")):
+        keywords.append("underwater ocean scene")
+    if any(w in title or w in text for w in ("float", "floating", "fly", "flying")):
+        keywords.append("objects floating in zero gravity")
+    if any(w in title or w in text for w in ("fire", "flame", "burn")):
+        keywords.append("floating round flames")
+    if any(w in title or w in text for w in ("build", "house", "write")):
+        keywords.append("construction site with floating tools")
+    if any(w in title or w in text for w in ("atmosphere", "air", "breathe")):
+        keywords.append("sky with clouds and wind")
+    if not keywords:
+        keywords.append(theme)
+
+    setting = ", ".join(keywords[:2])
+    prompt = (
+        f"AumSum style 2D cartoon educational scene, {setting}, "
+        "bright colors, flat vector illustration, no character, no mascot, no text, high quality"
+    )
+    return prompt
+
+
+def scene_to_position(i: int, total: int, char_w: int, char_h: int) -> dict:
+    """Return character placement/animation parameters for scene index i."""
+    layouts = [
+        {"x_rel": 0.18, "scale": 0.45},
+        {"x_rel": 0.78, "scale": 0.45},
+        {"x_rel": 0.50, "scale": 0.55},
+        {"x_rel": 0.28, "scale": 0.42},
+        {"x_rel": 0.72, "scale": 0.42},
+    ]
+    layout = layouts[i % len(layouts)]
+    scale = layout["scale"]
+    x = int(RESOLUTION[0] * layout["x_rel"] - char_w * scale / 2)
+    y = int(RESOLUTION[1] - char_h * scale - 60)
+    return {
+        "x": x,
+        "y": y,
+        "scale": scale,
+        "bounce": 6 + (i % 3) * 2,
+        "breath": 0.02,
     }
-    for filename, prompt in background_prompts.items():
-        fetch_image(prompt, assets_dir / filename, width=1280, height=720)
 
 
 def draw_text_with_shadow(
@@ -140,21 +164,52 @@ def draw_text_with_shadow(
     cy: int,
     fill: tuple[int, int, int] = (255, 255, 255),
     shadow: tuple[int, int, int] = (0, 0, 0),
-    align: str = "center",
 ) -> None:
     bbox = draw.textbbox((0, 0), text, font=font)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    if align == "center":
-        x = cx - tw // 2
-    elif align == "left":
-        x = cx
-    else:
-        x = cx - tw
+    x = cx - tw // 2
     y = cy - th // 2
-    # Shadow/glow
     for dx, dy in [(2, 2), (-2, -2), (2, -2), (-2, 2)]:
         draw.text((x + dx, y + dy), text, font=font, fill=shadow)
     draw.text((x, y), text, font=font, fill=fill)
+
+
+def draw_wrapped_text(
+    draw: ImageDraw.Draw,
+    text: str,
+    font: ImageFont.FreeTypeFont,
+    cx: int,
+    top_y: int,
+    max_width: int,
+    line_height: int,
+    fill: tuple[int, int, int] = (255, 255, 255),
+    shadow: tuple[int, int, int] = (0, 0, 0),
+) -> None:
+    """Draw wrapped text centered horizontally, starting at top_y."""
+    words = text.split()
+    lines: list[str] = []
+    current = ""
+    for word in words:
+        test = f"{current} {word}".strip()
+        bbox = draw.textbbox((0, 0), test, font=font)
+        if bbox[2] - bbox[0] <= max_width:
+            current = test
+        else:
+            if current:
+                lines.append(current)
+            current = word
+    if current:
+        lines.append(current)
+
+    for line in lines:
+        bbox = draw.textbbox((0, 0), line, font=font)
+        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        x = cx - tw // 2
+        y = top_y
+        for dx, dy in [(2, 2), (-2, -2), (2, -2), (-2, 2)]:
+            draw.text((x + dx, y + dy), line, font=font, fill=shadow)
+        draw.text((x, y), line, font=font, fill=fill)
+        top_y += line_height
 
 
 def build_scene_image(
@@ -171,11 +226,9 @@ def build_scene_image(
     title_font = safe_font(44)
     caption_font = safe_font(30)
 
-    # Title at top with highlighted keyword
-    # Highlight the first noun-ish word if possible; here highlight the first word
+    # Title at top: highlight first word
     words = title.split()
     if words:
-        # Simple heuristic: highlight the first word
         first = words[0]
         rest = " " + " ".join(words[1:]) if len(words) > 1 else ""
         bbox = draw.textbbox((0, 0), first, font=title_font)
@@ -185,7 +238,6 @@ def build_scene_image(
         total_w = fw + rw
         start_x = (RESOLUTION[0] - total_w) // 2
         y = 40
-        # shadow
         draw.text((start_x + 2, y + 2), first, font=title_font, fill=(0, 0, 0))
         draw.text((start_x, y), first, font=title_font, fill=(255, 220, 80))
         if rest:
@@ -194,15 +246,17 @@ def build_scene_image(
     else:
         draw_text_with_shadow(draw, title, title_font, RESOLUTION[0] // 2, 50)
 
-    # Caption box at bottom
+    # Caption box at bottom, wrapped
     if caption:
-        box_pad = 20
-        bbox = draw.textbbox((0, 0), caption, font=caption_font)
-        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-        box_w = min(tw + box_pad * 2, RESOLUTION[0] - 80)
-        box_h = th + box_pad * 2
+        box_pad = 18
+        max_box_w = RESOLUTION[0] - 120
+        wrapped = textwrap.fill(caption, width=50)
+        line_count = wrapped.count("\n") + 1
+        line_h = 36
+        box_h = line_count * line_h + box_pad * 2
+        box_w = max_box_w
         box_x = (RESOLUTION[0] - box_w) // 2
-        box_y = RESOLUTION[1] - box_h - 30
+        box_y = RESOLUTION[1] - box_h - 25
         overlay = Image.new("RGBA", RESOLUTION, (0, 0, 0, 0))
         overlay_draw = ImageDraw.Draw(overlay)
         overlay_draw.rounded_rectangle(
@@ -212,7 +266,15 @@ def build_scene_image(
         )
         img = Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
         draw = ImageDraw.Draw(img)
-        draw_text_with_shadow(draw, caption, caption_font, RESOLUTION[0] // 2, box_y + box_h // 2)
+        draw_wrapped_text(
+            draw,
+            caption,
+            caption_font,
+            RESOLUTION[0] // 2,
+            box_y + box_pad,
+            max_box_w - box_pad * 2,
+            line_h,
+        )
 
     img.save(output_path, "PNG")
 
@@ -231,7 +293,6 @@ def render_scene(
     base_clip = ImageClip(str(scene_image_path), duration=duration)
 
     char_img = Image.open(character_path).convert("RGBA")
-    # Base size for character
     target_h = int(RESOLUTION[1] * positions.get("scale", 0.5))
     char_w = int(char_img.width * target_h / char_img.height)
     char_h = target_h
@@ -247,8 +308,12 @@ def render_scene(
         y = base_y + bounce_amp * math.sin(t * 5)
         return x, y
 
-    # MoviePy resized needs the clip to be VideoClip; ImageClip is fine.
-    char_clip = char_clip.resized(lambda t: (char_w * (1 + breath * math.sin(t * 3)), char_h * (1 + breath * math.sin(t * 3))))
+    char_clip = char_clip.resized(
+        lambda t: (
+            char_w * (1 + breath * math.sin(t * 3)),
+            char_h * (1 + breath * math.sin(t * 3)),
+        )
+    )
     char_clip = char_clip.with_position(get_pos)
 
     audio = AudioFileClip(audio_path)
@@ -286,27 +351,27 @@ def assemble(clips: list[str], output: Path) -> Path:
     return output
 
 
-SCENE_POSITIONS = [
-    {"x": 500, "y": 280, "scale": 0.55, "bounce": 10, "breath": 0.02},
-    {"x": 100, "y": 300, "scale": 0.45, "bounce": 6, "breath": 0.02},
-    {"x": 480, "y": 300, "scale": 0.48, "bounce": 8, "breath": 0.02},
-    {"x": 120, "y": 320, "scale": 0.45, "bounce": 6, "breath": 0.02},
-    {"x": 500, "y": 260, "scale": 0.55, "bounce": 10, "breath": 0.02},
-]
-
-
-def build_scene_images(assets_dir: Path, scenes: list[dict]) -> list[Path]:
-    bg_files = ["bg_hook.png", "bg_submarine.png", "bg_fish.png", "bg_coral.png", "bg_outro.png"]
+def build_scene_images(assets_dir: Path, scenes: list[dict], theme: str) -> list[Path]:
     scene_images: list[Path] = []
     for i, scene in enumerate(scenes):
-        bg = assets_dir / bg_files[min(i, len(bg_files) - 1)]
+        prompt = scene_to_background_prompt(scene, theme)
+        # Use a short hash of the prompt for caching to avoid redownloading
+        prompt_hash = hashlib.md5(prompt.encode("utf-8")).hexdigest()[:8]
+        bg_path = assets_dir / f"bg_{i:03d}_{prompt_hash}.png"
+        fetch_image(prompt, bg_path)
         out = assets_dir / f"scene_{i:03d}_composite.png"
-        build_scene_image(bg, scene["text"], scene["text"], out)
+        build_scene_image(bg_path, scene["text"], scene["text"], out)
         scene_images.append(out)
     return scene_images
 
 
-async def main_async(project_dir_str: str = "examples/aumsum-transparent-ocean") -> None:
+def compute_positions(scenes: list[dict]) -> list[dict]:
+    # Use a dummy character size for layout; actual resized size is computed later.
+    dummy_w, dummy_h = 512, 512
+    return [scene_to_position(i, len(scenes), dummy_w, dummy_h) for i in range(len(scenes))]
+
+
+async def main_async(project_dir_str: str = "examples/what-if-gravity-disappeared") -> None:
     project_dir = Path(project_dir_str)
     assets_dir = project_dir / "assets"
     output_dir = project_dir / "output"
@@ -317,14 +382,16 @@ async def main_async(project_dir_str: str = "examples/aumsum-transparent-ocean")
 
     project = load_project(str(project_dir / "project.yaml"))
     scenes = parse_script(str(project_dir / "script.md"))
+    theme = project.get("style", {}).get("category", "educational-cartoon")
 
-    print("[1/4] Generating assets (character + backgrounds) ...")
+    print(f"[1/4] Generating character for {len(scenes)} scenes...")
     generate_assets(assets_dir)
 
-    print("[2/4] Building scene images ...")
-    scene_images = build_scene_images(assets_dir, scenes)
+    print("[2/4] Building scene images with AI backgrounds...")
+    scene_images = build_scene_images(assets_dir, scenes, theme)
 
-    print("[3/4] Rendering scenes with narration ...")
+    print("[3/4] Rendering scenes with narration...")
+    positions = compute_positions(scenes)
     clip_paths: list[str] = []
     for i, scene in enumerate(scenes):
         audio_path = audio_dir / f"scene_v2_{i:03d}.mp3"
@@ -332,10 +399,9 @@ async def main_async(project_dir_str: str = "examples/aumsum-transparent-ocean")
             print(f"  Generating audio for scene {i + 1}...")
             await generate_audio(scene["text"], str(audio_path))
         print(f"  Rendering scene {i + 1}...")
-        pos = SCENE_POSITIONS[min(i, len(SCENE_POSITIONS) - 1)]
         clip_path = render_scene(
             i, scene["text"], str(audio_path), scene_images[i],
-            assets_dir / "character.png", output_dir, pos,
+            assets_dir / "character.png", output_dir, positions[i],
         )
         clip_paths.append(clip_path)
 
@@ -347,5 +413,5 @@ async def main_async(project_dir_str: str = "examples/aumsum-transparent-ocean")
 
 if __name__ == "__main__":
     import sys
-    project_dir_arg = sys.argv[1] if len(sys.argv) > 1 else "examples/aumsum-transparent-ocean"
+    project_dir_arg = sys.argv[1] if len(sys.argv) > 1 else "examples/what-if-gravity-disappeared"
     asyncio.run(main_async(project_dir_arg))
