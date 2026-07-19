@@ -1,0 +1,32 @@
+{
+  "1": {
+    "inputs": {
+      "prompt": "Vibrant cinematic illustration, high contrast, teal-orange grading",
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1,
+      "seed": 42
+    },
+    "class_type": "EmptyLatentImage"
+  },
+  "2": {
+    "inputs": {
+      "samples": ["1", 0],
+      "vae": ["3", 0]
+    },
+    "class_type": "VAEDecode"
+  },
+  "3": {
+    "inputs": {
+      "vae_name": "flux_vae.sft"
+    },
+    "class_type": "VAELoader"
+  },
+  "4": {
+    "inputs": {
+      "filename_prefix": "flux_output",
+      "images": ["2", 0]
+    },
+    "class_type": "SaveImage"
+  }
+}

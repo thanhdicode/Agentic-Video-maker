@@ -1,0 +1,21 @@
+{
+  "1": {
+    "inputs": {
+      "image": "scene_001.png",
+      "width": 832,
+      "height": 480,
+      "video_frames": 81,
+      "fps": 16,
+      "motion_bucket_id": 127,
+      "seed": 42
+    },
+    "class_type": "WanImageToVideo"
+  },
+  "2": {
+    "inputs": {
+      "filename_prefix": "wan_i2v",
+      "video": ["1", 0]
+    },
+    "class_type": "SaveVideo"
+  }
+}

@@ -1,0 +1,63 @@
+pipeline:
+  stages:
+    - research
+    - script
+    - storyboard
+    - image_gen
+    - video_gen
+    - audio_gen
+    - lip_sync
+    - subtitle
+    - edit
+    - upscale
+    - final_render
+
+  defaults:
+    target_duration_seconds: 600
+    target_words_per_minute: 150
+    min_scene_duration: 2
+    max_scene_duration: 8
+    transitions:
+      - fade
+      - zoom_out
+      - j_cut
+
+  research:
+    max_sources: 8
+    timeout_seconds: 120
+
+  script:
+    hook_length_seconds: 5
+    pattern_interrupt_interval_seconds: 40
+
+  storyboard:
+    scenes_per_minute: 6
+    style_prompt: "Vibrant, high contrast, cinematic teal-orange grading, 2D motion graphics"
+
+  image_gen:
+    model: "flux_schnell"
+    batch_size: 1
+
+  video_gen:
+    model: "wan2_1_i2v_1_3b"
+    frames: 81
+    fps: 16
+
+  audio_gen:
+    voice: "default"
+    music_volume_db: -20
+    sfx_volume_db: -15
+
+  subtitle:
+    style: "tiktok_bold"
+    burn: true
+
+  edit:
+    codec: "libx265"
+    crf: 23
+    pixel_format: "yuv420p"
+
+  upscale:
+    enabled: false
+    scale: 2
+    interpolate_to_fps: 60

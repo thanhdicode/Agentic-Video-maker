@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:/Users/Administrator/repos/Agentic-Video-maker"],
+      "env": {}
+    },
+    "ffmpeg": {
+      "command": "python",
+      "args": ["mcp/ffmpeg_mcp_server.py"]
+    },
+    "comfyui": {
+      "command": "python",
+      "args": ["mcp/comfyui_mcp_server.py"]
+    }
+  }
+}

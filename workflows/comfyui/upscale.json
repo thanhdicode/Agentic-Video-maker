@@ -1,0 +1,17 @@
+{
+  "1": {
+    "inputs": {
+      "image": "input.png",
+      "upscale_model": "RealESRGAN_x2plus.pth",
+      "scale": 2
+    },
+    "class_type": "RealESRGANUpscale"
+  },
+  "2": {
+    "inputs": {
+      "filename_prefix": "upscaled",
+      "images": ["1", 0]
+    },
+    "class_type": "SaveImage"
+  }
+}

@@ -1,0 +1,47 @@
+project:
+  name: "AI Video Studio"
+  output_dir: "projects"
+  temp_dir: ".tmp"
+  default_resolution: "1920x1080"
+  default_fps: 30
+
+paths:
+  models: "models"
+  workflows: "workflows/comfyui"
+  projects: "projects"
+
+comfyui:
+  host: "http://localhost:8188"
+  workflow_dir: "workflows/comfyui"
+
+ollama:
+  host: "http://localhost:11434"
+  default_model: "qwen3:32b"
+  fallback_model: "llama3.3:70b"
+
+audio:
+  sample_rate: 24000
+  tts_model: "f5-tts"
+  voice_cloning_model: "f5-tts"
+
+video:
+  i2v_model: "wan2.1-i2v-14b-480p"
+  t2v_model: "wan2.1-t2v-14b"
+  upscale_scale: 2
+  target_fps: 60
+
+subtitle:
+  style: "animated_ass"
+  max_chars_per_line: 40
+  burn_subtitles: true
+
+n8n:
+  host: "http://localhost:5678"
+  webhook_path: "/webhook/ai-video-studio"
+
+mcp:
+  config_file: "mcp/mcp_config.json"
+  enabled_servers:
+    - filesystem
+    - ffmpeg
+    - comfyui

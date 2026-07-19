@@ -1,0 +1,35 @@
+{
+  "name": "AI Video Studio Pipeline",
+  "nodes": [
+    {
+      "id": "trigger",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "ai-video-studio",
+        "responseMode": "responseNode"
+      }
+    },
+    {
+      "id": "run_pipeline",
+      "type": "n8n-nodes-base.executeCommand",
+      "parameters": {
+        "command": "python -m agents.orchestrator --idea={{ $json.idea }} --project-id={{ $json.project_id }}"
+      }
+    },
+    {
+      "id": "return_url",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "parameters": {
+        "body": "{\"project_id\": \"{{ $json.project_id }}\", \"output\": \"{{ $json.output_path }}\"}"
+      }
+    }
+  ],
+  "connections": {
+    "trigger": {
+      "main": [[{"node": "run_pipeline", "type": "main", "index": 0}]]
+    },
+    "run_pipeline": {
+      "main": [[{"node": "return_url", "type": "main", "index": 0}]]
+    }
+  }
+}

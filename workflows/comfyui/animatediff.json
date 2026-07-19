@@ -1,0 +1,19 @@
+{
+  "1": {
+    "inputs": {
+      "prompt": "Animated motion graphics, 2D infographic, kinetic text",
+      "width": 1024,
+      "height": 576,
+      "video_length": 16,
+      "fps": 8
+    },
+    "class_type": "AnimateDiffPrompt"
+  },
+  "2": {
+    "inputs": {
+      "filename_prefix": "animatediff",
+      "video": ["1", 0]
+    },
+    "class_type": "SaveVideo"
+  }
+}

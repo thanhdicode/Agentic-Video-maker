@@ -1,0 +1,76 @@
+llm:
+  qwen3_32b:
+    provider: "ollama"
+    model: "qwen3:32b"
+    temperature: 0.7
+    max_tokens: 8192
+    context_window: 131072
+    license: "Apache-2.0"
+  llama3_3_70b:
+    provider: "ollama"
+    model: "llama3.3:70b"
+    temperature: 0.7
+    max_tokens: 8192
+    context_window: 131072
+    license: "MIT"
+
+tts:
+  f5_tts:
+    repo: "SWivid/F5-TTS"
+    license: "CC-BY-NC-4.0"
+    vram_gb: 4.2
+    sample_rate: 24000
+    notes: "Best zero-shot cloning; not for commercial use."
+  kokoro_82m:
+    repo: "hexgrad/kokoro"
+    license: "Apache-2.0"
+    vram_gb: 0.3
+    sample_rate: 24000
+    notes: "Fast bulk narration; commercial-safe."
+
+image:
+  flux_dev:
+    repo: "black-forest-labs/FLUX.1-dev"
+    license: "Non-commercial free"
+    vram_gb: 24
+    resolution: "1024x1024"
+    notes: "Best quality; non-commercial only."
+  flux_schnell:
+    repo: "black-forest-labs/FLUX.1-schnell"
+    license: "Apache-2.0"
+    vram_gb: 12
+    resolution: "1024x1024"
+    notes: "Commercial-safe; use for production."
+
+video:
+  wan2_1_i2v_14b_480p:
+    repo: "Wan-Video/Wan2.1"
+    license: "Apache-2.0"
+    vram_gb: 24
+    resolution: "832x480"
+    notes: "Best quality I2V."
+  wan2_1_i2v_1_3b:
+    repo: "Wan-Video/Wan2.1"
+    license: "Apache-2.0"
+    vram_gb: 8
+    resolution: "832x480"
+    notes: "Fastest prototype I2V."
+  ltx_video_2_3:
+    repo: "Lightricks/LTX-Video"
+    license: "Apache-2.0"
+    vram_gb: 24
+    notes: "3x faster on RTX 40 series with NVFP8."
+
+upscale:
+  real_esrgan:
+    repo: "xinntao/Real-ESRGAN"
+    license: "BSD-3"
+    vram_gb: 4
+    scales: [2, 4]
+
+subtitle:
+  faster_whisper:
+    repo: "SYSTRAN/faster-whisper"
+    license: "MIT"
+    vram_gb: 4
+    model: "base"
