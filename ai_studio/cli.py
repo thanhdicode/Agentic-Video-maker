@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import os
 import sys
@@ -15,6 +16,11 @@ if REPO_ROOT not in sys.path:
 import yaml
 
 from agents.orchestrator import run_pipeline
+
+try:
+    import demo_aumsum_v2 as cpu_pipeline
+except Exception:
+    cpu_pipeline = None
 
 
 def _load_project(project_yaml: str) -> dict:
@@ -83,12 +89,44 @@ def plan(args: argparse.Namespace) -> int:
     return 0
 
 
+def _comfyui_available(url: str = "http://127.0.0.1:8188/system_stats", timeout: float = 3.0) -> bool:
+    try:
+        import requests
+        r = requests.get(url, timeout=timeout)
+        return r.status_code == 200
+    except Exception:
+        return False
+
+
 def produce(args: argparse.Namespace) -> int:
     """Run the full production pipeline."""
-    project = _load_project(args.project_yaml)
-    project_id = project["project"]["id"]
-    script_path = os.path.join(_project_dir(args.project_yaml), project["content"]["script_path"])
+    import requests
 
+    project = _load_project(args.project_yaml)
+    project_dir = _project_dir(args.project_yaml)
+    hardware_profile = project.get("production", {}).get("hardware_profile", "auto-detect")
+    quality = project.get("production", {}).get("quality", "prototype")
+
+    # Auto-detect: if ComfyUI is not running, fall back to the CPU/prototype pipeline.
+    wants_cpu = hardware_profile in ("cpu",) or quality in ("prototype", "cpu-demo")
+    if not wants_cpu and not _comfyui_available():
+        print("[WARN] ComfyUI not detected at http://127.0.0.1:8188.")
+        print("[WARN] Falling back to CPU/prototype pipeline (Pollinations images + MoviePy).")
+        print("[WARN] For full GPU quality, start ComfyUI and set hardware_profile to 'gpu'.")
+        wants_cpu = True
+
+    # CPU/prototype pipeline: immediately render an AumSum-style video.
+    if wants_cpu:
+        if cpu_pipeline is None:
+            print("[ERROR] CPU prototype pipeline (demo_aumsum_v2.py) is missing or failed to import.")
+            return 1
+        print("[INFO] Running CPU/prototype pipeline (Pollinations image generation + MoviePy).")
+        asyncio.run(cpu_pipeline.main_async(project_dir))
+        return 0
+
+    # GPU/full pipeline: requires ComfyUI and model weights.
+    project_id = project["project"]["id"]
+    script_path = os.path.join(project_dir, project["content"]["script_path"])
     with open(script_path, "r", encoding="utf-8") as f:
         script = f.read()
 
