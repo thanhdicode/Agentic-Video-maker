@@ -1,0 +1,15 @@
+Repository,Reason,Verdict,IssueCategory,Alternative
+bluefish2026/BlueFish,License unclear; very early prototype; no automation interface,Rejected,License/technical,Use sankar2389/cine-studio or custom pipeline
+IP-Consistency/Character-Adapter,Code 'coming soon' since 2024; not runnable,Rejected,Not shipped,CharForge / PuLID / IP-Adapter
+GenericJam/margarine,Elixir niche; not Python-native; limited community,Rejected,Language/integration,ComfyUI / black-forest-labs/flux
+Jalimani/claude-youtube,Prompt-only Claude Code skill; not a runnable tool,Rejected,Not a tool,Custom LLM wrappers
+osamaaltaf-pk/Omni-Lip-Sync,Windows-only GUI; no API; license not verified,Rejected,No API/license,Rhubarb Lip Sync
+Justin21523/anime-lora-pipeline,Anime-only; not general cartoon; license verify,Rejected,Scope/license,CharForge / kohya-ss
+orincolor/lora-pilot,Single contributor Docker bundle; license verify,Rejected,License/maintenance,kohya-ss/sd-scripts
+Stability-AI/AnimateDiff,Older motion module; quality below Wan/LTX for I2V,Rejected,Superseded,Wan-Video/Wan2.1 / LTX-Video
+Stability-AI/stable-audio-tools,Older repo; model license terms complex; verify,Rejected,Superseded/license,Stability-AI/stable-audio-3 / AudioCraft
+autonomic-ai-dev/agent-spine,"Very early, single-contributor Rust engine; NOASSERTION license",Rejected,Immature/license,langchain-ai/langgraph
+kuro6061/nexum,Early stage durable execution engine; ecosystem immature,Rejected,Immature,langchain-ai/langgraph / Temporal
+mikai-daichi/vtt-synced-voice,License not verified; single contributor; limited scope,Rejected,License,m-bain/WhisperX
+manulanirwan/universal-youtube-seo-suite,Browser-only static app; no API; limited automation,Rejected,No API,Custom LLM metadata generator
+ibrahimqureshae/whisperx-transcriber,Wrapper with 5 stars; unverified Windows app,Rejected,Maintenance/scope,m-bain/WhisperX / faster-whisper
