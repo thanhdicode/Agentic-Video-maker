@@ -53,6 +53,8 @@ Thumbs.db
 
 # Output
 output/
+examples/**/assets/
+examples/**/output/
 *.mp4
 *.mp3
 *.wav
