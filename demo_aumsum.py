@@ -384,8 +384,8 @@ def assemble(clips: list[str], output: Path) -> Path:
     return output
 
 
-async def main_async() -> None:
-    project_dir = Path("projects/aumsum-transparent-ocean")
+async def main_async(project_dir_str: str = "examples/aumsum-transparent-ocean") -> None:
+    project_dir = Path(project_dir_str)
     output_dir = project_dir / "output"
     audio_dir = project_dir / "audio"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -412,4 +412,6 @@ async def main_async() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main_async())
+    import sys
+    project_dir_arg = sys.argv[1] if len(sys.argv) > 1 else "examples/aumsum-transparent-ocean"
+    asyncio.run(main_async(project_dir_arg))
