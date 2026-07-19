@@ -18,9 +18,12 @@ import yaml
 from agents.orchestrator import run_pipeline
 
 try:
-    import demo_aumsum_v2 as cpu_pipeline
+    import demo_aumsum_v3 as cpu_pipeline
 except Exception:
-    cpu_pipeline = None
+    try:
+        import demo_aumsum_v2 as cpu_pipeline  # type: ignore
+    except Exception:
+        cpu_pipeline = None
 
 
 def _load_project(project_yaml: str) -> dict:
@@ -118,7 +121,7 @@ def produce(args: argparse.Namespace) -> int:
     # CPU/prototype pipeline: immediately render an AumSum-style video.
     if wants_cpu:
         if cpu_pipeline is None:
-            print("[ERROR] CPU prototype pipeline (demo_aumsum_v2.py) is missing or failed to import.")
+            print("[ERROR] CPU prototype pipeline (demo_aumsum_v3.py / v2) is missing or failed to import.")
             return 1
         print("[INFO] Running CPU/prototype pipeline (Pollinations image generation + MoviePy).")
         asyncio.run(cpu_pipeline.main_async(project_dir))
