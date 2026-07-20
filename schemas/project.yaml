@@ -1,0 +1,88 @@
+project:
+  id: "brain-explained"
+  title: "How the Brain Works"
+  target_platform: "youtube"
+  aspect_ratio: "16:9"
+  resolution: "1920x1080"
+  fps: 30
+  duration_seconds: 90
+  language: "en"
+  subtitle_languages:
+    - "en"
+    - "vi"
+
+audience:
+  age_min: 8
+  age_max: 13
+  knowledge_level: "beginner"
+
+content:
+  script_path: "./projects/brain-explained/script.md"
+  reference_videos:
+    - "https://www.youtube.com/watch?v=ndDpjT0_IM0"
+    - "https://www.youtube.com/watch?v=difvQyWFmxw"
+
+style:
+  category: "educational-cartoon"
+  originality_required: true
+  character_mode: "original"
+  visual_density: "high"
+  motion_level: "high"
+  humor_level: "medium"
+  infographic_level: "medium"
+  palette:
+    primary: "#FF6B35"
+    secondary: "#004E89"
+    accent: "#F7B801"
+    background: "#F8F9FA"
+  typography:
+    title_font: "Fredoka One"
+    body_font: "Nunito"
+    max_font_size: 96
+    safe_area_percent: 90
+
+production:
+  profile: "hybrid-professional"
+  mode: "auto"
+  quality: "youtube-pro"
+  hardware_profile: "auto-detect"
+  allow_cloud_api: true
+  maximum_budget_usd: 30
+  reuse_cached_assets: true
+  regenerate_failed_scenes: true
+  max_retries_per_scene: 2
+
+voice:
+  narrator_language: "en"
+  narrator_style: "curious-friendly"
+  multi_character: true
+  default_voice: "kokoro-en"
+  voice_cloning:
+    enabled: false
+    reference_audio: ""
+
+models:
+  image: "flux_schnell"
+  image_to_video: "wan_1_3b"
+  video_interpolation: "tooncrafter"
+  tts: "kokoro"
+  music: "musicgen-small"
+  sfx: "audiogen"
+
+delivery:
+  burned_captions: true
+  clean_master: true
+  audio_stems: true
+  thumbnail: true
+  youtube_metadata: true
+  vertical_version: false
+  square_version: false
+
+approval:
+  auto_mode: true
+  checkpoints:
+    - "creative_direction"
+    - "character_design"
+    - "storyboard"
+    - "animatic"
+    - "final_preview"

@@ -1,0 +1,6 @@
+Benchmark,Setup,Target,Metrics,Status
+Character consistency suite,"Generate 10 backgrounds, 10 poses, 8 expressions, 5 angles, 2-char scene, walking/pointing/close-up/wide",Character pipeline,"Face sim, outfit sim, color sim, body proportion, hands, expression accuracy",Designed — not executed (no GPU)
+Talking-head lip-sync,Rhubarb sprite pipeline vs LivePortrait vs MuseTalk on generated host,Lip-sync agent,"Viseme accuracy, sync offset, identity preservation, render speed",Designed — not executed
+I2V motion quality,Wan 1.3B/14B vs LTX-Video vs ToonCrafter on same keyframes,Animation agent,"Motion coherence, character drift, camera control, VRAM peak",Designed — not executed
+Audio mix,Kokoro narration + MusicGen background + AudioGen SFX + ducking,Sound designer agent,"Loudness LUFS, voice clarity, SFX timing, no clipping",Designed — not executed
+End-to-end 90s cartoon,Script -> character -> storyboard -> assets -> animatic -> video -> edit -> QA,Full studio,"Setup time, generation time, render time, API cost, failure count, final score",Designed — not executed

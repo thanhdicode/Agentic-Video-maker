@@ -6,6 +6,7 @@ llm:
     max_tokens: 8192
     context_window: 131072
     license: "Apache-2.0"
+    notes: "Default local reasoning model for script, storyboard, and review."
   llama3_3_70b:
     provider: "ollama"
     model: "llama3.3:70b"
@@ -13,20 +14,28 @@ llm:
     max_tokens: 8192
     context_window: 131072
     license: "MIT"
+    notes: "Fallback local model."
+  gemini_2_5_pro:
+    provider: "google"
+    model: "gemini-2.5-pro-preview-05-06"
+    temperature: 0.7
+    license: "Proprietary"
+    notes: "Best for character design, code generation, and visual reasoning if API key is available."
 
-tts:
-  f5_tts:
-    repo: "SWivid/F5-TTS"
-    license: "CC-BY-NC-4.0"
-    vram_gb: 4.2
-    sample_rate: 24000
-    notes: "Best zero-shot cloning; not for commercial use."
-  kokoro_82m:
-    repo: "hexgrad/kokoro"
+character:
+  charforge:
+    repo: "RishiDesai/CharForge"
+    license: "MIT"
+    vram_gb: 24
+    notes: "Train character LoRA from a single reference image; FLUX-based."
+  pulid_flux:
+    repo: "ToTheBeginning/PuLID"
     license: "Apache-2.0"
-    vram_gb: 0.3
-    sample_rate: 24000
-    notes: "Fast bulk narration; commercial-safe."
+    notes: "ID-preserving generation for FLUX without fine-tuning."
+  ip_adapter:
+    repo: "cubiq/ComfyUI_IPAdapter_plus"
+    license: "MIT"
+    notes: "Character consistency in ComfyUI."
 
 image:
   flux_dev:
@@ -34,13 +43,17 @@ image:
     license: "Non-commercial free"
     vram_gb: 24
     resolution: "1024x1024"
-    notes: "Best quality; non-commercial only."
+    notes: "Best quality keyframes and assets; non-commercial only."
   flux_schnell:
     repo: "black-forest-labs/FLUX.1-schnell"
     license: "Apache-2.0"
     vram_gb: 12
     resolution: "1024x1024"
-    notes: "Commercial-safe; use for production."
+    notes: "Commercial-safe default for backgrounds and props."
+  qwen_image:
+    repo: "QwenLM/Qwen2.5-VL"
+    license: "Apache-2.0/Tongyi"
+    notes: "Alternative local image generation for character/object prompts."
 
 video:
   wan2_1_i2v_14b_480p:
@@ -48,7 +61,7 @@ video:
     license: "Apache-2.0"
     vram_gb: 24
     resolution: "832x480"
-    notes: "Best quality I2V."
+    notes: "Best quality I2V for character/camera motion."
   wan2_1_i2v_1_3b:
     repo: "Wan-Video/Wan2.1"
     license: "Apache-2.0"
@@ -59,18 +72,96 @@ video:
     repo: "Lightricks/LTX-Video"
     license: "Apache-2.0"
     vram_gb: 24
-    notes: "3x faster on RTX 40 series with NVFP8."
+    notes: "3x faster on RTX 40 series with NVFP8; native audio support."
+  tooncrafter:
+    repo: "Doubiiu/ToonCrafter"
+    license: "Apache-2.0"
+    vram_gb: 24
+    resolution: "512x320"
+    notes: "Generative cartoon interpolation between two keyframes."
 
-upscale:
-  real_esrgan:
-    repo: "xinntao/Real-ESRGAN"
-    license: "BSD-3"
-    vram_gb: 4
-    scales: [2, 4]
+animation_2d:
+  remotion:
+    repo: "remotion-dev/remotion"
+    license: "Proprietary free tier / Enterprise"
+    notes: "Programmatic motion graphics and composition in React."
+  moviepy:
+    repo: "Zulko/moviepy"
+    license: "MIT"
+    notes: "Python editing, Ken Burns, labels, transitions."
+  rive:
+    repo: "rive-app/rive"
+    license: "MIT"
+    notes: "2D character state-machine runtime."
 
-subtitle:
-  faster_whisper:
-    repo: "SYSTRAN/faster-whisper"
+lip_sync:
+  musetalk:
+    repo: "TMElyralab/MuseTalk"
+    license: "NOASSERTION"
+    vram_gb: 6
+    notes: "High-quality lip sync for realistic/3D talking heads."
+  liveportrait:
+    repo: "KwaiVGI/LivePortrait"
     license: "MIT"
     vram_gb: 4
-    model: "base"
+    notes: "Head motion and expression for portrait/character images."
+  rhubarb_lip_sync:
+    repo: "DanielSWolf/rhubarb-lip-sync"
+    license: "MIT"
+    notes: "2D mouth-shape generation from audio; works with PNG sprites."
+
+tts:
+  f5_tts:
+    repo: "SWivid/F5-TTS"
+    license: "MIT"
+    vram_gb: 4.2
+    sample_rate: 24000
+    notes: "Best zero-shot cloning; non-commercial weights."
+  kokoro_82m:
+    repo: "hexgrad/kokoro"
+    license: "Apache-2.0"
+    vram_gb: 0.3
+    sample_rate: 24000
+    notes: "Fast bulk narration; commercial-safe."
+  cosyvoice_3:
+    repo: "FunAudioLLM/CosyVoice"
+    license: "Apache-2.0"
+    vram_gb: 4
+    sample_rate: 24000
+    notes: "Multi-lingual, emotion control, commercial-safe."
+
+audio:
+  musicgen:
+    repo: "facebookresearch/audiocraft"
+    license: "MIT"
+    vram_gb: 4
+    notes: "Background music generation."
+  audiogen:
+    repo: "facebookresearch/audiocraft"
+    license: "MIT"
+    vram_gb: 4
+    notes: "Sound effect generation."
+
+editing:
+  ffmpeg:
+    repo: "FFmpeg/FFmpeg"
+    license: "LGPL/GPL"
+    notes: "Encoding, concat, LUT, subtitle burn."
+  moviepy:
+    repo: "Zulko/moviepy"
+    license: "MIT"
+    notes: "High-level Python editing and compositing."
+  auto_editor:
+    repo: "WyattBlue/auto-editor"
+    license: "MIT"
+    notes: "AI-driven silence removal and pacing."
+
+workflows:
+  open_montage:
+    repo: "calesthio/OpenMontage"
+    license: "AGPL-3.0"
+    notes: "Reference architecture for agentic video production with 400+ skills."
+  aicomic_builder:
+    repo: "LingyiChen-AI/AIComicBuilder"
+    license: "Apache-2.0"
+    notes: "Full Chinese/English comic-to-animation pipeline; good reference for 2D cartoon."

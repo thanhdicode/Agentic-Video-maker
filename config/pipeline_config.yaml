@@ -2,25 +2,28 @@ pipeline:
   stages:
     - research
     - script
+    - character_design
+    - asset_generation
     - storyboard
     - image_gen
+    - animation
     - video_gen
     - audio_gen
-    - lip_sync
-    - subtitle
     - edit
-    - upscale
-    - final_render
+    - review
 
   defaults:
-    target_duration_seconds: 600
+    target_duration_seconds: 180
     target_words_per_minute: 150
-    min_scene_duration: 2
-    max_scene_duration: 8
+    min_scene_duration: 3
+    max_scene_duration: 10
+    resolution: "1280x720"
+    fps: 30
+    style: "2D cartoon, vibrant colors, thick clean outlines, flat shading, white background"
     transitions:
       - fade
-      - zoom_out
-      - j_cut
+      - slide_left
+      - pop
 
   research:
     max_sources: 8
@@ -28,15 +31,39 @@ pipeline:
 
   script:
     hook_length_seconds: 5
-    pattern_interrupt_interval_seconds: 40
+    pattern_interrupt_interval_seconds: 30
+    structure: "hook -> explain -> example -> recap"
+
+  character_design:
+    engine: "charforge"  # charforge | pulid | ip_adapter
+    generate_sheet: true
+    poses: ["front", "3-4", "side"]
+    expressions: ["neutral", "happy", "surprised", "excited"]
+
+  asset_generation:
+    generate_backgrounds: true
+    generate_props: true
+    generate_labels: true
+    remove_background: true
 
   storyboard:
-    scenes_per_minute: 6
-    style_prompt: "Vibrant, high contrast, cinematic teal-orange grading, 2D motion graphics"
+    scenes_per_minute: 8
+    camera_options:
+      - static
+      - slow_zoom_in
+      - pan_right
+      - ken_burns
+      - dolly_push
 
   image_gen:
     model: "flux_schnell"
+    width: 1280
+    height: 720
     batch_size: 1
+
+  animation:
+    primary_engine: "tooncrafter"  # tooncrafter | wan_i2v | ltx_i2v | moviepy
+    fallback_engine: "moviepy_ken_burns"
 
   video_gen:
     model: "wan2_1_i2v_1_3b"
@@ -44,20 +71,23 @@ pipeline:
     fps: 16
 
   audio_gen:
-    voice: "default"
-    music_volume_db: -20
-    sfx_volume_db: -15
+    tts_engine: "kokoro"  # kokoro | f5_tts | cosyvoice
+    music_engine: "musicgen"
+    sfx_engine: "audiogen"
+    music_volume_db: -18
+    sfx_volume_db: -12
 
   subtitle:
-    style: "tiktok_bold"
+    style: "cartoon_bold"
     burn: true
+    max_chars_per_line: 32
 
   edit:
-    codec: "libx265"
+    codec: "libx264"
     crf: 23
     pixel_format: "yuv420p"
 
-  upscale:
-    enabled: false
-    scale: 2
-    interpolate_to_fps: 60
+  review:
+    min_score: 0.7
+    auto_retry: true
+    max_retries: 2

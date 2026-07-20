@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI Video Studio Project",
+  "type": "object",
+  "required": ["project", "audience", "content", "style", "production", "voice", "models", "delivery"],
+  "properties": {
+    "project": {
+      "type": "object",
+      "required": ["id", "title", "target_platform", "aspect_ratio", "resolution", "fps", "duration_seconds", "language"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9_-]+$" },
+        "title": { "type": "string" },
+        "target_platform": { "type": "string", "enum": ["youtube", "tiktok", "instagram", "generic"] },
+        "aspect_ratio": { "type": "string", "enum": ["16:9", "9:16", "1:1", "4:5"] },
+        "resolution": { "type": "string", "pattern": "^\\d+x\\d+$" },
+        "fps": { "type": "integer", "minimum": 24, "maximum": 60 },
+        "duration_seconds": { "type": "integer", "minimum": 10 },
+        "language": { "type": "string", "minLength": 2, "maxLength": 5 },
+        "subtitle_languages": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "audience": {
+      "type": "object",
+      "required": ["age_min", "age_max", "knowledge_level"],
+      "properties": {
+        "age_min": { "type": "integer", "minimum": 0 },
+        "age_max": { "type": "integer", "minimum": 1 },
+        "knowledge_level": { "type": "string", "enum": ["beginner", "intermediate", "advanced"] }
+      }
+    },
+    "content": {
+      "type": "object",
+      "required": ["script_path"],
+      "properties": {
+        "script_path": { "type": "string" },
+        "reference_videos": { "type": "array", "items": { "type": "string", "format": "uri" } }
+      }
+    },
+    "style": {
+      "type": "object",
+      "required": ["category", "originality_required", "character_mode", "visual_density", "motion_level", "humor_level", "infographic_level"],
+      "properties": {
+        "category": { "type": "string", "enum": ["educational-cartoon", "anime", "storybook", "minimal", "realistic"] },
+        "originality_required": { "type": "boolean" },
+        "character_mode": { "type": "string", "enum": ["original", "reference", "none"] },
+        "visual_density": { "type": "string", "enum": ["low", "medium", "high"] },
+        "motion_level": { "type": "string", "enum": ["low", "medium", "high"] },
+        "humor_level": { "type": "string", "enum": ["low", "medium", "high"] },
+        "infographic_level": { "type": "string", "enum": ["low", "medium", "high"] },
+        "palette": {
+          "type": "object",
+          "properties": {
+            "primary": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "secondary": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "accent": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "background": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+          }
+        },
+        "typography": {
+          "type": "object",
+          "properties": {
+            "title_font": { "type": "string" },
+            "body_font": { "type": "string" },
+            "max_font_size": { "type": "integer" },
+            "safe_area_percent": { "type": "integer", "minimum": 50, "maximum": 100 }
+          }
+        }
+      }
+    },
+    "production": {
+      "type": "object",
+      "required": ["profile", "mode", "quality", "hardware_profile"],
+      "properties": {
+        "profile": { "type": "string", "enum": ["local-open-source", "hybrid-professional", "maximum-quality"] },
+        "mode": { "type": "string", "enum": ["auto", "approval"] },
+        "quality": { "type": "string", "enum": ["prototype", "youtube-pro", "broadcast"] },
+        "hardware_profile": { "type": "string", "enum": ["auto-detect", "cpu", "entry-gpu", "pro-gpu", "studio-gpu"] },
+        "allow_cloud_api": { "type": "boolean" },
+        "maximum_budget_usd": { "type": "number", "minimum": 0 },
+        "reuse_cached_assets": { "type": "boolean" },
+        "regenerate_failed_scenes": { "type": "boolean" },
+        "max_retries_per_scene": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "voice": {
+      "type": "object",
+      "required": ["narrator_language", "narrator_style"],
+      "properties": {
+        "narrator_language": { "type": "string" },
+        "narrator_style": { "type": "string" },
+        "multi_character": { "type": "boolean" },
+        "default_voice": { "type": "string" },
+        "voice_cloning": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "reference_audio": { "type": "string" }
+          }
+        }
+      }
+    },
+    "models": {
+      "type": "object",
+      "required": ["image", "image_to_video", "tts", "music", "sfx"],
+      "properties": {
+        "image": { "type": "string", "enum": ["flux_schnell", "flux_dev", "sdxl", "qwen_image"] },
+        "image_to_video": { "type": "string", "enum": ["wan_1_3b", "wan_14b", "ltx", "hunyuan"] },
+        "video_interpolation": { "type": "string", "enum": ["tooncrafter", "rife", "none"] },
+        "tts": { "type": "string", "enum": ["kokoro", "f5_tts", "cosyvoice", "fish_speech", "piper"] },
+        "music": { "type": "string", "enum": ["musicgen-small", "musicgen-medium", "stable_audio_3"] },
+        "sfx": { "type": "string", "enum": ["audiogen", "stable_audio_3_sfx", "foleycrafter"] }
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "required": ["burned_captions", "clean_master"],
+      "properties": {
+        "burned_captions": { "type": "boolean" },
+        "clean_master": { "type": "boolean" },
+        "audio_stems": { "type": "boolean" },
+        "thumbnail": { "type": "boolean" },
+        "youtube_metadata": { "type": "boolean" },
+        "vertical_version": { "type": "boolean" },
+        "square_version": { "type": "boolean" }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "properties": {
+        "auto_mode": { "type": "boolean" },
+        "checkpoints": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

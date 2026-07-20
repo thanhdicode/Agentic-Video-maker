@@ -1,4 +1,4 @@
-"""Video editing agent: assemble clips, add subtitles, mix audio."""
+"""Video editing agent: assemble clips, add labels, subtitles, music, and SFX."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from .orchestrator import PipelineState
 
 
 def edit_node(state: PipelineState) -> PipelineState:
-    """Assemble final video with audio, subtitles, and transitions."""
+    """Assemble final video with audio, subtitles, labels, transitions, and color grade."""
     engine = os.environ.get("AI_VIDEO_EDIT_ENGINE", "").lower()
     if engine == "resolve" or os.environ.get("AI_VIDEO_USE_RESOLVE", "").lower() in (
         "1",
@@ -48,10 +48,17 @@ def edit_node(state: PipelineState) -> PipelineState:
     srt_path = os.path.join(project_dir, "subtitles.srt")
 
     try:
-        assemble_video(state.video_paths, draft_path)
+        assemble_video(state.video_paths, draft_path, transition="fade")
         generate_subtitles(state.audio_paths.get("narration", ""), srt_path)
+
+        # TODO: overlay labels, lower-thirds, and character poses before burning subtitles
         burn_subtitles(draft_path, srt_path, final_path)
-        mix_audio(final_path, state.audio_paths.get("music", ""), final_path)
+
+        # Layer music and SFX under narration
+        if state.audio_paths.get("music"):
+            mix_audio(final_path, state.audio_paths["music"], final_path, music_db=-18.0)
+
+        # TODO: add SFX ducking per cue, color grade LUT, intro/outro cards
     except Exception as exc:
         state.error = f"Edit failed: {exc}"
 
