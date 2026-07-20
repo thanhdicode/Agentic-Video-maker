@@ -1,0 +1,42 @@
+{
+  "background_color": "#111111",
+  "axis_x_color": "#FF5252",
+  "axis_y_color": "#69F0AE",
+  "axis_z_color": "#4FC3F7",
+  "point_color": "#FFD600",
+  "voice": "en-US-GuyNeural",
+  "segments": [
+    {
+      "type": "title",
+      "duration": 2.328
+    },
+    {
+      "type": "axes",
+      "duration": 3.528
+    },
+    {
+      "type": "coords",
+      "duration": 3.912
+    },
+    {
+      "type": "plot_x",
+      "duration": 3.864
+    },
+    {
+      "type": "plot_y",
+      "duration": 2.952
+    },
+    {
+      "type": "plot_z",
+      "duration": 3.768
+    },
+    {
+      "type": "reveal",
+      "duration": 3.552
+    },
+    {
+      "type": "outro",
+      "duration": 3.096
+    }
+  ]
+}
