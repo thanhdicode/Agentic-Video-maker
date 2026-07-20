@@ -11,6 +11,7 @@ Local-first, agentic video production pipeline built from the [Ultimate Local AI
 - **Video:** Wan 2.2 / LTX-Video / AnimateDiff
 - **Audio:** F5-TTS / Kokoro + AudioCraft (MusicGen / AudioGen)
 - **Editing:** FFmpeg + MoviePy + Auto-Editor + optional DaVinci Resolve Studio, Blender VSE, or Shotcut/MLT
+- **Educational videos:** YouTube ingestion -> script -> TTS -> text-on-color visuals -> final cut
 - **Workflow:** n8n (optional)
 - **MCP:** Filesystem, FFmpeg, ComfyUI, Browser MCP servers
 
@@ -55,6 +56,10 @@ python -m agents.orchestrator --idea "Game launch trailer"
 # Or render with Shotcut/MLT (headless, fast CPU cuts/transitions)
 set AI_VIDEO_USE_SHOTCUT=1
 python -m agents.orchestrator --idea "Game launch trailer"
+
+# Generate an educational explainer from a topic or YouTube URL
+python -m agents.orchestrator --nodes edu_video --idea "fractions" --audience kids
+python -m agents.orchestrator --youtube "https://www.youtube.com/watch?v=..." --audience kids
 ```
 
 ## Docker

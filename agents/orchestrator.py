@@ -25,12 +25,16 @@ from . import (
 class PipelineState:
     project_id: str = ""
     idea: str = ""
+    youtube_url: str = ""
+    target_audience: str = "kids"
     research: dict = field(default_factory=dict)
     script: dict = field(default_factory=dict)
     storyboard: list = field(default_factory=list)
     image_paths: list = field(default_factory=list)
     video_paths: list = field(default_factory=list)
     audio_paths: dict = field(default_factory=dict)
+    source_metadata: dict = field(default_factory=dict)
+    source_transcript: str = ""
     subtitle_path: str = ""
     output_path: str = ""
     error: Optional[str] = None
@@ -39,12 +43,16 @@ class PipelineState:
         return {
             "project_id": self.project_id,
             "idea": self.idea,
+            "youtube_url": self.youtube_url,
+            "target_audience": self.target_audience,
             "research": self.research,
             "script": self.script,
             "storyboard": self.storyboard,
             "image_paths": self.image_paths,
             "video_paths": self.video_paths,
             "audio_paths": self.audio_paths,
+            "source_metadata": self.source_metadata,
+            "source_transcript": self.source_transcript,
             "subtitle_path": self.subtitle_path,
             "output_path": self.output_path,
             "error": self.error,
@@ -57,6 +65,8 @@ def build_pipeline_graph(
     """Build the LangGraph state machine for video production."""
     graph = StateGraph(PipelineState)
 
+    from .edu_video_agent import edu_video_node
+
     nodes: dict[str, Callable[[PipelineState], PipelineState]] = {
         "research": research_node,
         "script": script_node,
@@ -65,6 +75,7 @@ def build_pipeline_graph(
         "video_gen": video_node,
         "audio_gen": audio_node,
         "edit": edit_node,
+        "edu_video": edu_video_node,
     }
 
     if enabled_nodes:
@@ -102,16 +113,54 @@ def run_pipeline(idea: str, project_id: Optional[str] = None) -> dict[str, Any]:
     return final_state.to_dict()
 
 
+def run_edu_pipeline(
+    idea: str,
+    youtube_url: str = "",
+    audience: str = "kids",
+    project_id: Optional[str] = None,
+) -> dict[str, Any]:
+    """Run the educational-video pipeline from a topic or YouTube URL."""
+    project_id = project_id or f"edu_{hash(idea or youtube_url) & 0xFFFFFFFF:08x}"
+    project_dir = os.path.join("projects", project_id)
+    os.makedirs(project_dir, exist_ok=True)
+
+    state = PipelineState(
+        project_id=project_id,
+        idea=idea,
+        youtube_url=youtube_url,
+        target_audience=audience,
+        audio_paths={"music": "test_clips/music_long.mp3"},
+    )
+    graph = build_pipeline_graph(["edu_video"])
+
+    final_state = graph.invoke(state)
+    summary_path = os.path.join(project_dir, "state.json")
+    with open(summary_path, "w", encoding="utf-8") as f:
+        json.dump(final_state.to_dict(), f, indent=2, ensure_ascii=False)
+
+    return final_state.to_dict()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="AI Video Studio orchestrator")
-    parser.add_argument("--idea", required=True, help="Video topic / idea")
+    parser.add_argument("--idea", default="", help="Video topic / idea")
+    parser.add_argument("--youtube", default="", help="YouTube URL to ingest")
+    parser.add_argument("--audience", default="kids", help="Target audience (e.g. kids)")
     parser.add_argument("--project-id", help="Project identifier")
     parser.add_argument("--nodes", help="Comma-separated list of nodes to run")
     args = parser.parse_args()
 
-    enabled = args.nodes.split(",") if args.nodes else None
-    graph = build_pipeline_graph(enabled)
-    result = run_pipeline(args.idea, args.project_id)
+    if args.youtube or args.nodes == "edu_video":
+        result = run_edu_pipeline(
+            idea=args.idea,
+            youtube_url=args.youtube,
+            audience=args.audience,
+            project_id=args.project_id,
+        )
+    else:
+        enabled = args.nodes.split(",") if args.nodes else None
+        graph = build_pipeline_graph(enabled)
+        result = run_pipeline(args.idea, args.project_id)
     print(json.dumps(result, indent=2, ensure_ascii=False))
 
 
