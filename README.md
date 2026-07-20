@@ -10,7 +10,7 @@ Local-first, agentic video production pipeline built from the [Ultimate Local AI
 - **Image:** ComfyUI + FLUX.1
 - **Video:** Wan 2.2 / LTX-Video / AnimateDiff
 - **Audio:** F5-TTS / Kokoro + AudioCraft (MusicGen / AudioGen)
-- **Editing:** FFmpeg + MoviePy + Auto-Editor + optional DaVinci Resolve Studio
+- **Editing:** FFmpeg + MoviePy + Auto-Editor + optional DaVinci Resolve Studio or Blender VSE
 - **Workflow:** n8n (optional)
 - **MCP:** Filesystem, FFmpeg, ComfyUI, Browser MCP servers
 
@@ -46,6 +46,10 @@ python -m agents.orchestrator --idea "How local AI replaces stock footage"
 # Optional: render the final cut with DaVinci Resolve Studio
 # Requires Resolve running with external scripting enabled.
 set AI_VIDEO_USE_RESOLVE=1
+python -m agents.orchestrator --idea "Game launch trailer"
+
+# Or render with Blender VSE (works headless without a GPU)
+set AI_VIDEO_USE_BLENDER=1
 python -m agents.orchestrator --idea "Game launch trailer"
 ```
 

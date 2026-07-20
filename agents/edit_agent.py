@@ -12,10 +12,24 @@ from .orchestrator import PipelineState
 
 def edit_node(state: PipelineState) -> PipelineState:
     """Assemble final video with audio, subtitles, and transitions."""
-    if os.environ.get("AI_VIDEO_USE_RESOLVE", "").lower() in ("1", "true", "yes"):
+    engine = os.environ.get("AI_VIDEO_EDIT_ENGINE", "").lower()
+    if engine == "resolve" or os.environ.get("AI_VIDEO_USE_RESOLVE", "").lower() in (
+        "1",
+        "true",
+        "yes",
+    ):
         from .resolve_edit_agent import resolve_edit_node
 
         return resolve_edit_node(state)
+
+    if engine == "blender" or os.environ.get("AI_VIDEO_USE_BLENDER", "").lower() in (
+        "1",
+        "true",
+        "yes",
+    ):
+        from .blender_edit_agent import blender_edit_node
+
+        return blender_edit_node(state)
 
     project_dir = os.path.join("projects", state.project_id)
     os.makedirs(project_dir, exist_ok=True)
