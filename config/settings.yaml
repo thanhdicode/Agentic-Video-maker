@@ -60,6 +60,15 @@ blender:
   text_overlay_location: [0.5, 0.85]
   text_overlay_color: [1.0, 1.0, 1.0, 1.0]
 
+shotcut:
+  enabled: false
+  executable: ""              # empty = auto-find; or set SHOTCUT_MELT env
+  resolution: "1920x1080"
+  fps: 30
+  transition_frames: 15       # crossfade frames between clips (0 = hard cut)
+  music_volume: 0.3
+  narration_volume: 1.0
+
 n8n:
   host: "http://localhost:5678"
   webhook_path: "/webhook/ai-video-studio"

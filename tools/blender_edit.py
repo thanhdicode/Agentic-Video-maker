@@ -141,11 +141,13 @@ def main() -> None:
             raise FileNotFoundError(path)
 
         start = current_frame - transition_frames if (prev_strip and transition_frames) else current_frame
+        fit_method = clip.get("fit_method", "ORIGINAL")
         strip = sequences.new_movie(
             name=clip.get("name", f"Clip_{i}"),
             filepath=path,
             channel=channel,
             frame_start=start,
+            fit_method=fit_method,
         )
         strip.frame_offset_start = int(clip.get("frame_offset_start", 0))
         strip.frame_offset_end = int(clip.get("frame_offset_end", 0))

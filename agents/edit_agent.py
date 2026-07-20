@@ -31,6 +31,15 @@ def edit_node(state: PipelineState) -> PipelineState:
 
         return blender_edit_node(state)
 
+    if engine == "shotcut" or os.environ.get("AI_VIDEO_USE_SHOTCUT", "").lower() in (
+        "1",
+        "true",
+        "yes",
+    ):
+        from .shotcut_edit_agent import shotcut_edit_node
+
+        return shotcut_edit_node(state)
+
     project_dir = os.path.join("projects", state.project_id)
     os.makedirs(project_dir, exist_ok=True)
 
