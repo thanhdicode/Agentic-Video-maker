@@ -66,6 +66,7 @@ def build_pipeline_graph(
     graph = StateGraph(PipelineState)
 
     from .edu_video_agent import edu_video_node
+    from .manim_video_agent import manim_video_node
 
     nodes: dict[str, Callable[[PipelineState], PipelineState]] = {
         "research": research_node,
@@ -76,6 +77,7 @@ def build_pipeline_graph(
         "audio_gen": audio_node,
         "edit": edit_node,
         "edu_video": edu_video_node,
+        "manim_video": manim_video_node,
     }
 
     if enabled_nodes:
@@ -141,6 +143,34 @@ def run_edu_pipeline(
     return final_state.to_dict()
 
 
+def run_manim_pipeline(
+    idea: str,
+    youtube_url: str = "",
+    audience: str = "kids",
+    project_id: Optional[str] = None,
+) -> dict[str, Any]:
+    """Run the Manim educational-video pipeline from a topic or YouTube URL."""
+    project_id = project_id or f"manim_{hash(idea or youtube_url) & 0xFFFFFFFF:08x}"
+    project_dir = os.path.join("projects", project_id)
+    os.makedirs(project_dir, exist_ok=True)
+
+    state = PipelineState(
+        project_id=project_id,
+        idea=idea,
+        youtube_url=youtube_url,
+        target_audience=audience,
+        audio_paths={"music": "test_clips/music_long.mp3"},
+    )
+    graph = build_pipeline_graph(["manim_video"])
+
+    final_state = graph.invoke(state)
+    summary_path = os.path.join(project_dir, "state.json")
+    with open(summary_path, "w", encoding="utf-8") as f:
+        json.dump(final_state.to_dict(), f, indent=2, ensure_ascii=False)
+
+    return final_state.to_dict()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="AI Video Studio orchestrator")
     parser.add_argument("--idea", default="", help="Video topic / idea")
@@ -148,9 +178,19 @@ def main() -> None:
     parser.add_argument("--audience", default="kids", help="Target audience (e.g. kids)")
     parser.add_argument("--project-id", help="Project identifier")
     parser.add_argument("--nodes", help="Comma-separated list of nodes to run")
+    parser.add_argument(
+        "--manim", action="store_true", help="Use the Manim educational video pipeline"
+    )
     args = parser.parse_args()
 
-    if args.youtube or args.nodes == "edu_video":
+    if args.manim or args.nodes == "manim_video":
+        result = run_manim_pipeline(
+            idea=args.idea,
+            youtube_url=args.youtube,
+            audience=args.audience,
+            project_id=args.project_id,
+        )
+    elif args.youtube or args.nodes == "edu_video":
         result = run_edu_pipeline(
             idea=args.idea,
             youtube_url=args.youtube,
