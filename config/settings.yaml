@@ -35,6 +35,40 @@ subtitle:
   max_chars_per_line: 40
   burn_subtitles: true
 
+resolve:
+  enabled: false
+  resolution: "1920x1080"
+  fps: 30
+  color_science: "davinciYRGBColorManagedv2"
+  render_format: "mp4"
+  render_codec: "H264"
+  audio_codec: "aac"
+  render_name: "final_resolve"
+  lut_path: ""
+
+blender:
+  enabled: false
+  executable: ""              # empty = auto-find; or set BLENDER_EXECUTABLE env
+  resolution: "1920x1080"
+  fps: 30
+  transition_frames: 0        # crossfade frames between clips (0 = hard cut)
+  music_volume: 0.3
+  narration_volume: 1.0
+  text_overlay_enabled: true
+  text_overlay_font_size: 80
+  text_overlay_duration_sec: 2.0
+  text_overlay_location: [0.5, 0.85]
+  text_overlay_color: [1.0, 1.0, 1.0, 1.0]
+
+shotcut:
+  enabled: false
+  executable: ""              # empty = auto-find; or set SHOTCUT_MELT env
+  resolution: "1920x1080"
+  fps: 30
+  transition_frames: 15       # crossfade frames between clips (0 = hard cut)
+  music_volume: 0.3
+  narration_volume: 1.0
+
 n8n:
   host: "http://localhost:5678"
   webhook_path: "/webhook/ai-video-studio"

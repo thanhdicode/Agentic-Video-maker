@@ -1,8 +1,10 @@
 """Client wrappers and utilities for external AI services."""
 
 from .audio_gen import f5_tts, foley, kokoro_tts, musicgen
+from .blender_edit import BlenderNotFoundError, BlenderRenderError, BlenderVideoEditor
 from .character_consistency import build_character_sheet_prompt, lora_training_command
 from .comfyui_client import get_workflow_names, queue_workflow
+from .davinci_resolve import ClipInfo, ResolveController, ResolveError
 from .ffmpeg_tools import assemble_video, burn_subtitles, mix_audio
 from .ltx_video import i2v as ltx_i2v
 from .music_tools import generate_music, generate_sfx
@@ -17,6 +19,13 @@ __all__ = [
     # ComfyUI / workflow
     "queue_workflow",
     "get_workflow_names",
+    # External editing engines
+    "BlenderNotFoundError",
+    "BlenderRenderError",
+    "BlenderVideoEditor",
+    "ClipInfo",
+    "ResolveController",
+    "ResolveError",
     # FFmpeg
     "assemble_video",
     "burn_subtitles",

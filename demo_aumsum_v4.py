@@ -195,43 +195,19 @@ def generate_chime(out_path: Path) -> AudioSegment:
 # Asset generation
 # ---------------------------------------------------------------------------
 
-CHARACTER_POSES = {
-    "neutral": (
-        "AumSum style cute turquoise cartoon mascot, big friendly eyes, "
-        "short dark hair, 2D flat vector, full body, neutral standing pose, "
-        "small closed mouth, white background, high quality, no text"
-    ),
-    "pointing": (
-        "AumSum style cute turquoise cartoon mascot, big friendly eyes, "
-        "short dark hair, 2D flat vector, full body, pointing to the right, "
-        "small closed mouth, white background, high quality, no text"
-    ),
-    "surprised": (
-        "AumSum style cute turquoise cartoon mascot, big surprised eyes, "
-        "small open mouth, hands up, short dark hair, 2D flat vector, full body, "
-        "white background, high quality, no text"
-    ),
-    "thumbsup": (
-        "AumSum style cute turquoise cartoon mascot, big friendly eyes, "
-        "short dark hair, 2D flat vector, full body, thumbs up, "
-        "small closed mouth, white background, high quality, no text"
-    ),
-    "waving": (
-        "AumSum style cute turquoise cartoon mascot, big friendly eyes, "
-        "short dark hair, 2D flat vector, full body, waving hand, "
-        "small closed mouth, white background, high quality, no text"
-    ),
-}
+# Consistent mascot image (generated once and reused for every pose)
+CONSISTENT_MASCOT = Path("assets/mascot_final.png")
 
 
 def generate_character_poses(assets_dir: Path) -> dict[str, Path]:
-    print("[Assets] Generating mascot poses...")
+    print("[Assets] Using consistent mascot for all poses...")
     paths: dict[str, Path] = {}
-    for name, prompt in CHARACTER_POSES.items():
-        raw = assets_dir / f"character_{name}_raw.png"
+    for name in ("neutral", "pointing", "surprised", "thumbsup", "waving"):
         png = assets_dir / f"character_{name}.png"
-        fetch_image(prompt, raw, width=1024, height=1024, negative=NEGATIVE_CHAR)
-        remove_background(raw, png)
+        png.parent.mkdir(parents=True, exist_ok=True)
+        if not png.exists():
+            import shutil
+            shutil.copy(CONSISTENT_MASCOT, png)
         paths[name] = png
     return paths
 
@@ -598,7 +574,7 @@ def make_character_clip(
         blink = any(start <= t < start + 0.12 for start in blink_times)
         lx = look_x + 0.06 * math.sin(t * 3 + scene_idx)
         ly = 0.5 + 0.05 * math.cos(t * 2.5 + scene_idx)
-        face = draw_face(base_pil, mouth_open, (lx, ly), blink)
+        face = base_pil  # keep original mascot face; draw_face misaligns on this star mascot
 
         breath = 0.04 * math.sin(t * 2.5 + scene_idx)
         sx = 1.0 + breath

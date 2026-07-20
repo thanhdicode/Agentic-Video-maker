@@ -4,18 +4,16 @@ Local-first, agentic video production pipeline for professional 2D cartoon educa
 
 See the deep research report at [docs/RESEARCH_REPORT.md](./docs/RESEARCH_REPORT.md) and the studio design at [docs/STUDIO_DESIGN.md](./docs/STUDIO_DESIGN.md).
 
-## Selected architecture
+## Stack
 
-- **Hybrid professional studio**: AI asset generation + rigged 2D host + generative I2V for complex motion + code-driven motion graphics.
-- **Orchestration:** LangGraph
-- **Character consistency:** CharForge + kohya-ss + IP-Adapter + PuLID
-- **Image:** FLUX.1-schnell (commercial-safe) via ComfyUI
-- **Video:** Wan 2.1 + LTX-Video + ToonCrafter
-- **TTS:** Kokoro (English) / Fish Speech (multi-lingual, incl. Vietnamese)
-- **Music/SFX/foley:** AudioCraft + FoleyCrafter
-- **Edit/compose:** Motion Canvas + MoviePy + FFmpeg
-- **QA:** MVAD + UVQ + VMAF + FFmpeg probes
-- **Subtitles:** WhisperX
+- **Orchestration:** LangGraph + Ollama
+- **Research:** GPT-Researcher / Crawl4AI stubs
+- **Script:** Ollama (Qwen3 / Llama3.3)
+- **Image:** ComfyUI + FLUX.1
+- **Video:** Wan 2.2 / LTX-Video / AnimateDiff / ToonCrafter
+- **Audio:** F5-TTS / Kokoro + AudioCraft (MusicGen / AudioGen)
+- **Editing:** FFmpeg + MoviePy + Auto-Editor + optional DaVinci Resolve Studio, Blender VSE, or Shotcut/MLT
+- **Educational videos:** YouTube ingestion -> script -> TTS -> text-on-color visuals (FFmpeg) OR Manim animation -> final cut
 - **MCP:** Filesystem, FFmpeg, ComfyUI, Browser MCP servers
 
 ## Project Structure
@@ -45,13 +43,38 @@ python -m venv venv
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
 
-# 2. Start a project
+# 2. Configure
+# Edit config/settings.yaml and config/model_config.yaml
+
+# 3a. Start a project with the ai-studio CLI
 python ai-studio.py init my-video
 # Edit projects/my-video/project.yaml and script.md
-
-# 3. Validate and produce
 python ai-studio.py validate projects/my-video/project.yaml
 python ai-studio.py produce projects/my-video/project.yaml
+
+# 3b. Or run the orchestrator directly
+python -m agents.orchestrator --idea "How local AI replaces stock footage"
+
+# Optional: render the final cut with DaVinci Resolve Studio
+# Requires Resolve running with external scripting enabled.
+set AI_VIDEO_USE_RESOLVE=1
+python -m agents.orchestrator --idea "Game launch trailer"
+
+# Or render with Blender VSE (works headless without a GPU)
+set AI_VIDEO_USE_BLENDER=1
+python -m agents.orchestrator --idea "Game launch trailer"
+
+# Or render with Shotcut/MLT (headless, fast CPU cuts/transitions)
+set AI_VIDEO_USE_SHOTCUT=1
+python -m agents.orchestrator --idea "Game launch trailer"
+
+# Generate an educational explainer from a topic or YouTube URL
+python -m agents.orchestrator --nodes edu_video --idea "fractions" --audience kids
+python -m agents.orchestrator --youtube "https://www.youtube.com/watch?v=..." --audience kids
+
+# Generate an explainer using Manim animations
+python -m agents.orchestrator --manim --idea "fractions" --audience kids
+python -m agents.orchestrator --manim --youtube "https://www.youtube.com/watch?v=..." --audience kids
 ```
 
 For full setup (GPU required), see:
