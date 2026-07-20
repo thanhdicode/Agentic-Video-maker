@@ -42,6 +42,7 @@ assets/
 *.pth
 *.bin
 *.onnx
+tools/rhubarb/
 
 # Logs
 *.log

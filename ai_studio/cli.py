@@ -18,12 +18,15 @@ import yaml
 from agents.orchestrator import run_pipeline
 
 try:
-    import demo_aumsum_v3 as cpu_pipeline
+    import demo_aumsum_v4 as cpu_pipeline
 except Exception:
     try:
-        import demo_aumsum_v2 as cpu_pipeline  # type: ignore
+        import demo_aumsum_v3 as cpu_pipeline  # type: ignore
     except Exception:
-        cpu_pipeline = None
+        try:
+            import demo_aumsum_v2 as cpu_pipeline  # type: ignore
+        except Exception:
+            cpu_pipeline = None
 
 
 def _load_project(project_yaml: str) -> dict:

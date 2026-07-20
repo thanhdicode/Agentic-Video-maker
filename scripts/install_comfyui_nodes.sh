@@ -25,6 +25,9 @@ CUSTOM_NODES=(
   "https://github.com/kijai/ComfyUI-WanVideoWrapper.git"
   "https://github.com/Lightricks/ComfyUI-LTXVideo.git"
   "https://github.com/Fannovel16/comfyui_controlnet_aux.git"
+  "https://github.com/kijai/ComfyUI-DynamiCrafterWrapper.git"
+  "https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved.git"
+  "https://github.com/colorAi/comfyui-storyboard.git"
 )
 
 NODES_DIR="$COMFYUI_DIR/custom_nodes"

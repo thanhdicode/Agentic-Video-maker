@@ -103,18 +103,27 @@ def download_all(profile: str) -> None:
     # Video generation
     if profile in ("hybrid-professional", "maximum-quality"):
         download_huggingface(
-            "Wan-AI/Wan2.1-I2V-14B-480P",
-            MODELS_DIR / "wan2.1-i2v-14b-480p",
+            "Wan-AI/Wan2.2-I2V-14B-480P",
+            MODELS_DIR / "wan2.2-i2v-14b-480p",
+            allow_patterns=["*.json", "*.safetensors", "*.txt"],
+        )
+        download_huggingface(
+            "Wan-AI/Wan2.2-Animate-14B",
+            MODELS_DIR / "wan2.2-animate-14b",
             allow_patterns=["*.json", "*.safetensors", "*.txt"],
         )
     else:
         download_huggingface(
-            "Wan-AI/Wan2.1-I2V-1.3B-480P",
-            MODELS_DIR / "wan2.1-i2v-1.3b-480p",
+            "Wan-AI/Wan2.2-T2V-1.3B",
+            MODELS_DIR / "wan2.2-t2v-1.3b",
             allow_patterns=["*.json", "*.safetensors", "*.txt"],
         )
     download_huggingface("Lightricks/LTX-Video", MODELS_DIR / "ltx-video")
-    download_huggingface("Doubiiu/ToonCrafter", MODELS_DIR / "tooncrafter")
+    # Pruned ToonCrafter for ComfyUI-DynamiCrafterWrapper
+    download_file(
+        "https://huggingface.co/Kijai/DynamiCrafter_pruned/resolve/main/tooncrafter_512_interp-fp16.safetensors",
+        MODELS_DIR / "tooncrafter" / "tooncrafter_512_interp-fp16.safetensors",
+    )
 
     # Character consistency
     download_huggingface("h94/IP-Adapter", MODELS_DIR / "ip-adapter")
