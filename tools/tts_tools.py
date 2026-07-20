@@ -1,7 +1,8 @@
 """Text-to-speech helper.
 
-Prefers ``pyttsx3`` when available. On Windows without pyttsx3, falls back to
-the built-in .NET ``System.Speech.Synthesis`` synthesizer via PowerShell.
+Prefers ``edge-tts`` (free Microsoft Azure online voices) when available.
+Falls back to ``pyttsx3`` or, on Windows, the built-in .NET
+``System.Speech.Synthesis`` synthesizer via PowerShell.
 """
 
 from __future__ import annotations
@@ -17,6 +18,59 @@ class TTSError(Exception):
     """Raised when TTS cannot produce audio."""
 
     pass
+
+
+def _edge_tts_to_speech(
+    text: str,
+    output: str | Path,
+    voice: str = "en-US-AriaNeural",
+) -> Path:
+    """Use edge-tts to render an MP3/WAV file.
+
+    edge-tts produces MP3; if the requested output has a ``.wav`` extension the
+    file is converted with ffmpeg.
+    """
+    import asyncio
+    from pathlib import Path
+
+    import edge_tts
+
+    out_path = Path(output)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    mp3_path = out_path.with_suffix(".mp3")
+
+    async def _run() -> None:
+        communicate = edge_tts.Communicate(text, voice)
+        await communicate.save(str(mp3_path))
+
+    asyncio.run(_run())
+
+    if out_path.suffix.lower() == ".mp3":
+        return mp3_path
+
+    # Convert to WAV if requested.
+    wav_path = out_path.with_suffix(".wav")
+    result = subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-i",
+            str(mp3_path),
+            "-ar",
+            "22050",
+            "-ac",
+            "1",
+            "-c:a",
+            "pcm_s16le",
+            str(wav_path),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise TTSError(f"edge-tts WAV conversion failed: {result.stderr}")
+    mp3_path.unlink(missing_ok=True)
+    return wav_path
 
 
 def _sapi_text_to_speech(text: str, output: str | Path, voice: Optional[str] = None) -> Path:
@@ -54,15 +108,25 @@ def text_to_speech(
     output: str | Path,
     voice: Optional[str] = None,
 ) -> Path:
-    """Render ``text`` to a WAV file.
+    """Render ``text`` to an audio file.
 
     Args:
         text: The text to speak.
-        output: Destination path (``.wav``).
-        voice: Optional voice name (e.g. ``Microsoft Zira Desktop``).
-               On Windows with pyttsx3 this is passed through; with the
-               SAPI fallback it selects the voice before speaking.
+        output: Destination path (``.mp3`` or ``.wav``).
+        voice: Optional voice name. For edge-tts use an Azure voice such as
+               ``en-US-AriaNeural``; for pyttsx3/SAPI use the installed voice
+               name (e.g. ``Microsoft Zira Desktop``).
     """
+    # Prefer edge-tts for high-quality free AI voices.
+    try:
+        import edge_tts
+    except ImportError:
+        edge_tts = None  # type: ignore[assignment]
+
+    if edge_tts is not None:
+        ai_voice = voice or "en-US-AriaNeural"
+        return _edge_tts_to_speech(text, output, voice=ai_voice)
+
     try:
         import pyttsx3
     except ImportError:
@@ -82,7 +146,7 @@ def text_to_speech(
         return _sapi_text_to_speech(text, output, voice=voice)
 
     raise TTSError(
-        "No TTS backend available. Install pyttsx3 or run on Windows with SAPI."
+        "No TTS backend available. Install edge-tts, pyttsx3, or run on Windows with SAPI."
     )
 
 

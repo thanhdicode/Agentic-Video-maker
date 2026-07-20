@@ -39,6 +39,33 @@ Output: `projects/<project_id>/final_manim_video.mp4`
 - **Smooth animations**: fades, morphs, camera moves, 3D support.
 - **Two versions**: the 3b1b fork (`manimgl`) is Grant Sanderson's bespoke version; the Community edition (`manim`) is well-documented and easier to install. This repo uses the Community edition.
 
+## Example: 3Blue1Brown-style Short — Moser's circle problem
+
+A complete hand-built example is in `projects/manim_circle_division/`. It reproduces the "Don't let it fool you!" Short about Moser's circle problem.
+
+Files:
+- `script.md` — full storyboard / narration (English).
+- `circle_division.py` — the Manim `CircleDivision` Scene (vertical 1080×1920, dark 3b1b palette).
+- `build.py` — end-to-end pipeline: `edge-tts` narration, timed `config.json`, Manim render, ASS subtitles, FFmpeg assembly.
+
+Run it:
+
+```cmd
+cd projects\manim_circle_division
+python build.py
+```
+
+Output: `projects/manim_circle_division/dont_let_it_fool_you.mp4` (1080×1920, H.264/AAC, burned English subtitles, free AI voice via `en-US-GuyNeural`).
+
+### How it works
+
+1. **Storyboard**: `script.md` splits the Short into 11 timed segments (title, intro, point/chord steps, pattern, expectation, reveal, outro).
+2. **Voice**: `edge-tts` renders each segment to `audio/*.mp3`. No API key required.
+3. **Timing**: `build.py` measures every audio clip and writes `config.json` so the Manim scene waits the exact duration.
+4. **Animation**: `circle_division.py` draws the circle, adds red points, creates chords, updates the region count, animates the `1,2,4,8,16,31` reveal, and burns captions.
+5. **Subtitles**: `build.py` generates `subtitles.ass` with bottom-center white text + black outline.
+6. **Assembly**: FFmpeg muxes the Manim video, the full narration, and the ASS subtitles.
+
 ## Limitations & next steps
 
 - The auto-generated scene is intentionally simple (text slides). For richer math visuals, pipe the script into an LLM prompt that writes Manim code directly, or call `tools/manim_tools.write_scene_file` with custom Manim source.
