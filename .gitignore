@@ -36,6 +36,8 @@ ENV/
 models/
 projects/*/
 !projects/.gitkeep
+!projects/manim_matrix_3d/
+!projects/manim_matrix_3d/**
 assets/
 *.safetensors
 *.ckpt

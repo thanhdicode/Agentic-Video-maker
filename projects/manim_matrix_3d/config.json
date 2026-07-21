@@ -1,0 +1,46 @@
+{
+  "background_color": "#111111",
+  "voice": "en-US-AvaNeural",
+  "segments": [
+    {
+      "type": "hook",
+      "duration": 7.032
+    },
+    {
+      "type": "input",
+      "duration": 7.464
+    },
+    {
+      "type": "matrix_intro",
+      "duration": 9.552
+    },
+    {
+      "type": "W1",
+      "duration": 8.328
+    },
+    {
+      "type": "W2",
+      "duration": 5.736
+    },
+    {
+      "type": "composition",
+      "duration": 8.544
+    },
+    {
+      "type": "basis_columns",
+      "duration": 9.816
+    },
+    {
+      "type": "neural_net",
+      "duration": 8.376
+    },
+    {
+      "type": "recap",
+      "duration": 6.552
+    },
+    {
+      "type": "cta",
+      "duration": 2.352
+    }
+  ]
+}
