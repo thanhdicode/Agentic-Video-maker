@@ -1,0 +1,46 @@
+{
+  "background_color": "#0a0a0a",
+  "voice": "en-US-AvaNeural",
+  "segments": [
+    {
+      "type": "hook",
+      "duration": 8.568
+    },
+    {
+      "type": "input",
+      "duration": 7.992
+    },
+    {
+      "type": "matrix_intro",
+      "duration": 6.696
+    },
+    {
+      "type": "layer1",
+      "duration": 6.84
+    },
+    {
+      "type": "bias",
+      "duration": 5.304
+    },
+    {
+      "type": "relu",
+      "duration": 8.52
+    },
+    {
+      "type": "layer2",
+      "duration": 6.168
+    },
+    {
+      "type": "output",
+      "duration": 5.376
+    },
+    {
+      "type": "learning",
+      "duration": 6.72
+    },
+    {
+      "type": "cta",
+      "duration": 2.448
+    }
+  ]
+}
