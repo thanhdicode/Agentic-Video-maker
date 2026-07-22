@@ -25,6 +25,7 @@ SCENE_FILE = PROJECT / "matrix_ai_vi.py"
 CONFIG_FILE = PROJECT / "config.json"
 ASS_FILE = PROJECT / "subtitles.ass"
 FINAL_MP4 = PROJECT / "matrix_ai_vi.mp4"
+POLISHED_MP4 = PROJECT / "matrix_ai_vi_polished.mp4"
 
 MANIM_ENV = Path("C:/Users/Administrator/manim_env")
 PYTHON = MANIM_ENV / "Scripts" / "python.exe"
@@ -421,6 +422,36 @@ def assemble_final(video: Path, audio: Path, music: Path) -> Path:
     return FINAL_MP4
 
 
+def polish_video(input_path: Path, output_path: Path) -> Path:
+    """Post-process the final MP4 for a more cinematic look."""
+    print("\n7/6 Polishing final video (color, sharpen, vignette)...")
+    result = run(
+        [
+            "ffmpeg",
+            "-y",
+            "-i",
+            input_path,
+            "-vf",
+            "eq=contrast=1.1:saturation=1.1:brightness=0.02,curves=all='0/0 0.5/0.52 1/1',unsharp=5:5:1.0:5:5:0.0,vignette=PI/5",
+            "-c:v",
+            "libx264",
+            "-crf",
+            "18",
+            "-preset",
+            "medium",
+            "-c:a",
+            "copy",
+            "-movflags",
+            "+faststart",
+            output_path,
+        ],
+        cwd=str(PROJECT),
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"Polish failed: {result.stderr}\n{result.stdout}")
+    return output_path
+
+
 def main() -> None:
     print("=" * 60)
     print("Building 'Ma trận là trái tim của AI' — Vietnamese 3D Shorts")
@@ -449,8 +480,13 @@ def main() -> None:
     final = assemble_final(video_path, audio_path, music_path)
     print(f"    -> {final}")
 
+    print("\n7/6 Polishing final video...")
+    polished = polish_video(final, POLISHED_MP4)
+    print(f"    -> {polished}")
+
     dur = ffprobe_duration(final)
     print(f"\nDone. Final duration: {dur:.2f}s")
+    print(f"Polished output: {polished}")
 
 
 if __name__ == "__main__":
