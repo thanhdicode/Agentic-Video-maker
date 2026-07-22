@@ -38,6 +38,8 @@ projects/*/
 !projects/.gitkeep
 !projects/manim_matrix_3d/
 !projects/manim_matrix_3d/**
+!projects/manim_matrix_ai_vi/
+!projects/manim_matrix_ai_vi/**
 assets/
 *.safetensors
 *.ckpt

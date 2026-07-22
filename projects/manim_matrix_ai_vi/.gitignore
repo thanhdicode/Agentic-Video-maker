@@ -1,0 +1,9 @@
+media/
+audio/
+__pycache__/
+*.png
+*.mp4
+*.mp3
+*.wav
+*.ass
+*.log

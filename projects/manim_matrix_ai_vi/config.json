@@ -1,0 +1,50 @@
+{
+  "background_color": "#0A0A0A",
+  "voice": "vi-VN-HoaiMyNeural",
+  "segments": [
+    {
+      "type": "hook",
+      "duration": 8.515625
+    },
+    {
+      "type": "matrix_transform",
+      "duration": 10.891625
+    },
+    {
+      "type": "cube_3d",
+      "duration": 10.195625
+    },
+    {
+      "type": "basis",
+      "duration": 11.179625
+    },
+    {
+      "type": "W1",
+      "duration": 11.059625
+    },
+    {
+      "type": "W2",
+      "duration": 9.859625
+    },
+    {
+      "type": "composition",
+      "duration": 10.579625
+    },
+    {
+      "type": "why",
+      "duration": 11.947625
+    },
+    {
+      "type": "neural_net",
+      "duration": 11.947625
+    },
+    {
+      "type": "forward_pass",
+      "duration": 11.707625
+    },
+    {
+      "type": "recap_cta",
+      "duration": 12.115625
+    }
+  ]
+}
