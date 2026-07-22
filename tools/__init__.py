@@ -4,6 +4,8 @@ from .blender_edit import BlenderNotFoundError, BlenderRenderError, BlenderVideo
 from .comfyui_client import queue_workflow
 from .davinci_resolve import ClipInfo, ResolveController, ResolveError
 from .ffmpeg_tools import assemble_video, burn_subtitles, mix_audio
+from .omniroute_client import chat as omniroute_chat, is_configured as omniroute_is_configured
+from .thumbnail_generator import generate_thumbnail
 from .music_tools import generate_music, generate_sfx
 from .upscale_tools import upscale_image, upscale_video
 from .whisper_tools import generate_subtitles, transcribe_audio
@@ -19,6 +21,9 @@ __all__ = [
     "assemble_video",
     "burn_subtitles",
     "mix_audio",
+    "omniroute_chat",
+    "omniroute_is_configured",
+    "generate_thumbnail",
     "generate_music",
     "generate_sfx",
     "upscale_image",
