@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import re
@@ -11,10 +12,39 @@ from pathlib import Path
 from typing import Any
 
 
+def _load_omniroute_client() -> Any | None:
+    """Load the OmniRoute client from the same tools directory."""
+    spec = importlib.util.spec_from_file_location(
+        "omniroute_client", Path(__file__).resolve().parent / "omniroute_client.py"
+    )
+    if spec and spec.loader:
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)  # type: ignore[union-attr]
+        return mod
+    return None
+
+
 class ScriptGenerationError(Exception):
     """Raised when an educational script cannot be generated."""
 
     pass
+
+
+def _query_omniroute(prompt: str, model: str = "") -> str:
+    """Send a prompt through an OpenAI-compatible OmniRoute endpoint."""
+    client = _load_omniroute_client()
+    if client is None:
+        raise ScriptGenerationError("OmniRoute client module not found")
+    if not client.is_configured():
+        raise ScriptGenerationError("OMNIROUTE_BASE_URL not configured")
+    try:
+        return client.chat(
+            prompt,
+            model=model or "auto",
+            system="You are a helpful scriptwriter for short educational videos.",
+        )
+    except Exception as exc:
+        raise ScriptGenerationError(f"OmniRoute call failed: {exc}") from exc
 
 
 def _query_ollama(prompt: str, model: str = "qwen3:32b", host: str = "http://localhost:11434") -> str:
@@ -132,10 +162,11 @@ def generate_educational_script(
 ) -> list[dict[str, Any]]:
     """Generate a kid-friendly explainer script with scene breakdowns.
 
-    Tries the local Ollama model first, then falls back to a generic template.
+    Tries OmniRoute first (if OMNIROUTE_BASE_URL is set), then local Ollama,
+    then falls back to a generic template.
     """
     if not model:
-        model = "qwen3:32b"
+        model = os.environ.get("OMNIROUTE_MODEL", "qwen3:32b")
     if not ollama_host:
         ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
@@ -148,6 +179,17 @@ def generate_educational_script(
     if transcript:
         prompt += f"\nUse this source transcript as inspiration:\n{transcript[:4000]}\n"
 
+    # 1. Try OmniRoute if configured.
+    if os.environ.get("OMNIROUTE_BASE_URL"):
+        try:
+            response = _query_omniroute(prompt, model=model)
+            script = _parse_script(response)
+            if script:
+                return script
+        except ScriptGenerationError:
+            pass
+
+    # 2. Try local Ollama.
     try:
         response = _query_ollama(prompt, model=model, host=ollama_host)
         script = _parse_script(response)

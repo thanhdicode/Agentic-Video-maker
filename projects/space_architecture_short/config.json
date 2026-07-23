@@ -1,0 +1,22 @@
+{
+  "segments": [
+    10.406,
+    10.686,
+    10.721,
+    11.151,
+    11.266,
+    10.991,
+    9.252,
+    10.526
+  ],
+  "segment_types": [
+    "hook",
+    "origin_vector",
+    "basis",
+    "span",
+    "basis_alt",
+    "dimension",
+    "higher_dim",
+    "outro"
+  ]
+}

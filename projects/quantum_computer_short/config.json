@@ -1,0 +1,22 @@
+{
+  "segments": [
+    4.561,
+    8.305,
+    10.465,
+    6.889,
+    7.729,
+    7.561,
+    4.249,
+    9.241
+  ],
+  "segment_types": [
+    "hook",
+    "classical_bit",
+    "qubit_bloch",
+    "hadamard",
+    "bell",
+    "interference",
+    "measurement",
+    "outro"
+  ]
+}

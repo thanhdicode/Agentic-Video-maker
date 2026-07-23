@@ -1,0 +1,115 @@
+{
+  "target_track": "METAMORPHOSIS — INTERWORLD (or similar lo-fi/ambient Shorts track)",
+  "note": "This track is copyrighted. Do not commit, distribute, or burn it into the final commercial master unless the user provides a properly licensed file in assets/audio/.",
+  "fallback_bed": "assets/music/bensound-softvibes.mp3",
+  "cues": [
+    {
+      "time": 0.0,
+      "event": "title_open",
+      "type": "bass_impact",
+      "action": "low hit on first frame, establishes space"
+    },
+    {
+      "time": 1.0,
+      "event": "title_snap",
+      "type": "transient",
+      "action": "sharp transient on title reveal"
+    },
+    {
+      "time": 6.0,
+      "event": "first_vector_grow",
+      "type": "electric_pulse",
+      "action": "pulse as arrow emerges"
+    },
+    {
+      "time": 10.0,
+      "event": "cut_to_origin_scene",
+      "type": "switch_click",
+      "action": "snappy transition click"
+    },
+    {
+      "time": 17.0,
+      "event": "basis_vectors_reveal",
+      "type": "electric_pulse",
+      "action": "pulse on i-hat / j-hat reveal"
+    },
+    {
+      "time": 23.0,
+      "event": "switch_click_basis",
+      "type": "switch_click",
+      "action": "click on parallelogram completion"
+    },
+    {
+      "time": 28.0,
+      "event": "vector_equation",
+      "type": "electric_pulse",
+      "action": "pulse as equation appears"
+    },
+    {
+      "time": 36.0,
+      "event": "span_riser",
+      "type": "riser",
+      "action": "ambient lift as span plane fills"
+    },
+    {
+      "time": 41.0,
+      "event": "span_plane_reveal",
+      "type": "whoosh_to_snap",
+      "action": "sweep snap as plane becomes visible"
+    },
+    {
+      "time": 49.0,
+      "event": "alternative_basis_pulse",
+      "type": "electric_pulse",
+      "action": "pulse as red basis vectors appear"
+    },
+    {
+      "time": 55.0,
+      "event": "basis_switch_click",
+      "type": "switch_click",
+      "action": "click on basis transform"
+    },
+    {
+      "time": 62.0,
+      "event": "alt_equation",
+      "type": "electric_pulse",
+      "action": "pulse on alternative equation"
+    },
+    {
+      "time": 73.0,
+      "event": "3D_riser",
+      "type": "riser",
+      "action": "ambient lift as k-hat enters"
+    },
+    {
+      "time": 78.0,
+      "event": "k_hat_sweep",
+      "type": "whoosh_to_snap",
+      "action": "sweep snap as 3D space expands"
+    },
+    {
+      "time": 87.0,
+      "event": "higher_dim_pulse",
+      "type": "electric_pulse",
+      "action": "pulse as R^n appears"
+    },
+    {
+      "time": 92.0,
+      "event": "data_dot_hit",
+      "type": "whoosh_to_snap",
+      "action": "tone hit as AI dimension text lands"
+    },
+    {
+      "time": 99.0,
+      "event": "outro_riser",
+      "type": "riser",
+      "action": "lift toward final summary"
+    },
+    {
+      "time": 108.0,
+      "event": "cta_snap",
+      "type": "transient",
+      "action": "final snap on call to action"
+    }
+  ]
+}
