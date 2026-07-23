@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.pyo
+media/
+audio/
+qa/qa_report.json
+qa/frames*/
+!space_architecture_thumbnail.png
+!space_architecture_thumbnail_frame.png

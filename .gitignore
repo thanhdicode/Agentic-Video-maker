@@ -42,6 +42,8 @@ projects/*/
 !projects/manim_matrix_ai_vi/**
 !projects/quantum_computer_short/
 !projects/quantum_computer_short/**
+!projects/space_architecture_short/
+!projects/space_architecture_short/**
 assets/
 *.safetensors
 *.ckpt
