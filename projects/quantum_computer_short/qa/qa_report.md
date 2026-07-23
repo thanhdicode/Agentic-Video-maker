@@ -2,7 +2,7 @@
 
 ## Final output
 - **File**: `projects/quantum_computer_short/quantum_short_voice_sfx.mp4`
-- **Duration**: 59.47 s (within 58–59.5 s)
+- **Duration**: 59.50 s (within 58–59.5 s)
 - **Resolution**: 1080 × 1920
 - **Frame rate**: 30 fps
 - **Video codec**: h264, yuv420p, High Profile
@@ -14,8 +14,8 @@
 - **No black frames**: spot-checked frames at 0 s, 1 s, 30 s, 58 s are non-black.
 - **No text out of frame**: all titles and formulas are within 80 px side margins and 300 px bottom safe area.
 - **Subtitle safe area**: ASS style uses 50 px margins and 160 px bottom margin.
-- **Audio peak**: true peak ≈ -10.2 dBFS (no clipping).
-- **Integrated loudness**: -25.8 LUFS (slightly below broadcast target, safe for mobile).
+- **Audio peak**: true peak ≈ -6.0 dBFS (no clipping).
+- **Integrated loudness**: -22.5 LUFS (closer to broadcast target, clear on mobile).
 - **Loudness range**: 0.8–1.5 LU (consistent, little dynamic surprise).
 
 ## Known limitations

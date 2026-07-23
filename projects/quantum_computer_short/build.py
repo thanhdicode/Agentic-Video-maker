@@ -230,12 +230,36 @@ def ass_time(seconds: float) -> str:
 def concatenate_audio(segments: list[dict[str, Any]]) -> Path:
     list_file = PROJECT / "concat_list.txt"
     out = AUDIO_DIR / "narration_padded.mp3"
+    entries = []
+    for i, s in enumerate(segments):
+        entries.append(s["path"])
+        pad = s.get("padded_duration", s["duration"]) - s["duration"]
+        if pad > 0.001:
+            silence = AUDIO_DIR / f"silence_{i:02d}.mp3"
+            if not silence.exists():
+                result = run(
+                    [
+                        "ffmpeg",
+                        "-y",
+                        "-f",
+                        "lavfi",
+                        "-i",
+                        "anullsrc=r=24000:cl=mono",
+                        "-t",
+                        f"{pad:.3f}",
+                        "-c:a",
+                        "libmp3lame",
+                        "-q:a",
+                        "9",
+                        silence,
+                    ]
+                )
+                if result.returncode != 0:
+                    raise RuntimeError(f"Silence generation failed: {result.stderr}\n{result.stdout}")
+            entries.append(silence)
     with open(list_file, "w", encoding="utf-8") as f:
-        for s in segments:
-            f.write(f"file '{s['path'].resolve().as_posix()}'\n")
-            pad = s.get("padded_duration", s["duration"]) - s["duration"]
-            if pad > 0.001:
-                f.write(f"file 'synth:silence|{pad:.3f}'\n")
+        for e in entries:
+            f.write(f"file '{e.resolve().as_posix()}'\n")
     result = run(
         ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", list_file, "-c", "copy", out],
         cwd=str(PROJECT),
@@ -488,7 +512,7 @@ def assemble_final(video: Path, narration: Path, sfx: Path, music: Path, music_f
                 "-i",
                 music_file,
                 "-filter_complex",
-                "[1:a][2:a]amix=inputs=2:duration=first:weights='1 0.9'[voice_sfx];"
+                "[1:a][2:a]amix=inputs=2:duration=first:weights='1 0.9',volume=1.5[voice_sfx];"
                 "[3:a]afade=t=in:ss=0:d=1,afade=t=out:st=57:d=2,asetnsamples=n=480*100[bed];"
                 "[voice_sfx][bed]amix=inputs=2:duration=first:weights='1 0.18'[aout]",
                 "-map",
@@ -535,7 +559,7 @@ def assemble_final(video: Path, narration: Path, sfx: Path, music: Path, music_f
             "-i",
             music,
             "-filter_complex",
-            "[1:a][2:a]amix=inputs=2:duration=first:weights='1 0.8'[voice_sfx];"
+            "[1:a][2:a]amix=inputs=2:duration=first:weights='1 0.8',volume=1.5[voice_sfx];"
             "[voice_sfx][3:a]amix=inputs=2:duration=first:weights='1 0.12'[aout]",
             "-map",
             "0:v",
