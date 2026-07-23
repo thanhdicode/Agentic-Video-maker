@@ -1,0 +1,79 @@
+{
+  "target_track": "METAMORPHOSIS — INTERWORLD",
+  "note": "This track is copyrighted. Do not commit, distribute, or burn it into the final commercial master unless the user provides a properly licensed file in assets/audio/.",
+  "fallback_bed": "projects/quantum_computer_short/audio/ambient_bed.wav",
+  "cues": [
+    {
+      "time": 0.0,
+      "event": "binary_tunnel_open",
+      "type": "bass_impact",
+      "action": "low hit on first frame, no build-up"
+    },
+    {
+      "time": 1.1,
+      "event": "myth_x_shatter",
+      "type": "transient",
+      "action": "sharp transient, then silence gap"
+    },
+    {
+      "time": 3.5,
+      "event": "wave_reveal",
+      "type": "pad_swell",
+      "action": "begin ambient pad / riser"
+    },
+    {
+      "time": 8.0,
+      "event": "bloch_sphere_orbit",
+      "type": "tonal_riser",
+      "action": "continuous tone rising to 11.5 s"
+    },
+    {
+      "time": 17.0,
+      "event": "hadamard_gate",
+      "type": "electric_pulse",
+      "action": "short pulse on gate activation"
+    },
+    {
+      "time": 23.0,
+      "event": "measurement_snap",
+      "type": "shutter_snap",
+      "action": "camera-shutter style snap"
+    },
+    {
+      "time": 28.0,
+      "event": "cnot_pulse",
+      "type": "electric_pulse",
+      "action": "second pulse slightly delayed from first"
+    },
+    {
+      "time": 30.5,
+      "event": "bell_wrong_states_cancel",
+      "type": "low_hit",
+      "action": "short low hit when |01> and |10> vanish"
+    },
+    {
+      "time": 35.0,
+      "event": "interference_field_open",
+      "type": "riser",
+      "action": "start building energy toward climax"
+    },
+    {
+      "time": 43.0,
+      "event": "constructive_interference_peak",
+      "type": "drop_or_peak",
+      "action": "main energy peak / beat drop of the track"
+    },
+    {
+      "time": 49.5,
+      "event": "measurement_sweep",
+      "type": "whoosh_to_snap",
+      "action": "sweep left to right, end with digital snap"
+    },
+    {
+      "time": 58.0,
+      "event": "loop_return",
+      "type": "loop_riser",
+      "action": "resolve to tonic / loop back to intro energy"
+    }
+  ]
+}
